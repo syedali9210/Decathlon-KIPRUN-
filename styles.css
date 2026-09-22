@@ -288,63 +288,49 @@ ul{list-style:none}
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   The five series — Figma "Untitled", Container 24:1794 (1482 × 2593)
+   The five series — the selected shoe on a stage with its details,
+   the range as five cards under it
    ═══════════════════════════════════════════════════════════════════ */
 html{scroll-padding-top:24px}
 @media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
 
 .series{
-  position:relative;overflow:hidden;padding:128px 24px 185px;
+  position:relative;padding:88px 24px 120px;
+  /* a faint measuring grid with + marks at the crossings, like the stage's construction lines */
   background:
-    linear-gradient(180deg,rgba(14,19,48,.3) 0%,rgba(14,19,48,0) 22%,transparent 22%,transparent 78%,rgba(14,19,48,0) 78%,rgba(14,19,48,.35) 100%),
-    var(--bg);
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cpath d='M0 .5H120M.5 0V120' stroke='%23fff' stroke-opacity='.035'/%3E%3Cpath d='M.5 -6V7M-6 .5H7' stroke='%237D88FF' stroke-opacity='.22'/%3E%3C/svg%3E") 0 0 / 120px 120px,
+    linear-gradient(180deg,#0b0d1c 0%,var(--bg) 70%);
 }
+.cat{max-width:1440px;margin:0 auto}
+.cat__top{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:48px;align-items:center}
 
-/* decoration sits in a 1482px box centred on the rows, so it stays registered to them at any width */
-.series__art{position:absolute;top:0;bottom:0;left:50%;width:1482px;translate:-50% 0;pointer-events:none}
-.series__contour{position:absolute;max-width:none}
-.series__contour--l{left:77px;top:333px;width:680px;height:634.84px}
-.series__contour--r{left:1089px;top:629px;width:511.5px;height:644px}
-/* the route: grey where you have been, Decathlon blue where it still runs; the square is you */
-.series__route{position:absolute;left:84.34px;top:96.38px;width:1081.45px;height:calc(100% - 178.4px);overflow:visible}
-.series__route path{fill:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
-.series__route .route__base{stroke:#313131}
-.series__route .route__lit{stroke:var(--route);stroke-dasharray:var(--lit,.59) 2}
-.series__marker{position:absolute;left:0;top:0;width:23px;height:23px;margin:-11.5px 0 0 -11.5px;background:#2D60DE;will-change:transform;
-  transform:translate3d(var(--mx,758px),var(--my,1520px),0)}
-.series__marker::after{content:"";position:absolute;inset:-1px;border:1px solid #2D60DE}
+/* ── stage ── */
+.stage{position:relative;aspect-ratio:16 / 9;display:grid;place-items:center;overflow:hidden;perspective:1100px;
+  background:radial-gradient(circle at 50% 56%,rgba(54,67,186,.36),transparent 62%),#05060b;
+  border:.8px solid rgba(255,255,255,.1)}
+.stage__c{position:absolute;width:12px;height:12px;border:0 solid rgba(255,255,255,.7);pointer-events:none;z-index:2}
+.stage__c:nth-of-type(1){left:0;top:0;border-width:.8px 0 0 .8px}
+.stage__c:nth-of-type(2){right:0;top:0;border-width:.8px .8px 0 0}
+.stage__c:nth-of-type(3){left:0;bottom:0;border-width:0 0 .8px .8px}
+.stage__c:nth-of-type(4){right:0;bottom:0;border-width:0 .8px .8px 0}
+.stage__tilt{width:74%;transform-style:preserve-3d;will-change:transform}
+.stage__float{transform-style:preserve-3d}
+.stage__img{width:100%;height:auto;filter:drop-shadow(0 30px 34px rgba(0,0,0,.55))}
+.stage__shadow{position:absolute;left:24%;right:24%;bottom:14%;height:7%;border-radius:50%;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(0,0,0,.7),transparent);filter:blur(6px)}
+.stage__model{position:absolute;left:14px;bottom:14px;z-index:2;font-family:var(--pixel);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--line)}
 
-.series__list{position:relative;display:grid;gap:149px;max-width:1132px;margin:0 auto;list-style:none}
-
-/* one row: shoe and copy either side of a 106px gap, framed by four corner ticks */
-.row{
-  position:relative;display:grid;grid-template-columns:433px 542.3px;column-gap:106px;
-  justify-content:center;align-items:center;min-height:336.8px;scroll-margin-top:48px;
-}
-.row--shoe-right{grid-template-columns:542.3px 433px}
-.row--shoe-right .row__shoe{order:2}
-.row__corner{position:absolute;width:9.5px;height:9.9px;border:0 solid var(--white);pointer-events:none;
-  transition:transform 300ms var(--ease-out),opacity 300ms var(--ease-out)}
-.row__corner:nth-of-type(1){left:0;top:0;border-width:.8px 0 0 .8px}
-.row__corner:nth-of-type(2){right:0;top:0;border-width:.8px .8px 0 0}
-.row__corner:nth-of-type(3){left:0;bottom:0;border-width:0 0 .8px .8px}
-.row__corner:nth-of-type(4){right:0;bottom:0;border-width:0 .8px .8px 0}
-
-.row__shoe{margin:0;display:grid;place-items:center}
-.row__shoe img{width:100%;height:auto;transition:transform 600ms var(--ease-out),opacity 600ms var(--ease-out)}
-
-.row__body{display:flex;flex-direction:column;min-height:335.7px}
-.row__tag{font-family:var(--pixel);font-size:14.404px;line-height:17.285px;letter-spacing:.02em;text-transform:uppercase;color:var(--line)}
-.row__name{padding-top:7.655px;font-family:var(--mori);font-weight:600;font-size:51.033px;line-height:50.012px;letter-spacing:-.02em;text-transform:uppercase}
-.row__usps{display:grid;row-gap:10.7px;margin-top:28.068px;list-style:none}
-.row__usps li{display:grid;grid-template-columns:39.5px 1fr;column-gap:9.877px;row-gap:2.469px;padding-top:9.877px;border-top:.8px solid rgba(255,255,255,.12)}
-.row__n{grid-row:span 2;font-family:var(--pixel);font-size:14.404px;line-height:17.285px;letter-spacing:.02em;color:var(--line)}
-.row__usps b{font-family:var(--mori);font-weight:600;font-size:15.639px;line-height:22.4px;letter-spacing:.01em;text-transform:uppercase}
-.row__usps p{font-family:var(--mori);font-weight:400;font-size:13.17px;line-height:18.438px;color:rgba(255,255,255,.62);opacity:.8}
-
-.row__buy{display:flex;align-items:center;gap:11.524px;margin-top:21.401px}
-.row__price{min-width:111.4px;padding-right:8.4px;font-family:var(--mori);font-weight:600;font-size:27.986px;line-height:27.986px;white-space:nowrap}
-.row__price--status{font-size:15.6px;line-height:28px;letter-spacing:.01em;text-transform:uppercase;color:rgba(255,255,255,.62)}
+/* ── info ── */
+.info__tag{font-family:var(--pixel);font-size:14.4px;line-height:1.2;letter-spacing:.04em;text-transform:uppercase;color:var(--line)}
+.info__name{margin-top:8px;font-family:var(--mori);font-weight:600;font-size:clamp(38px,3.6vw,54px);line-height:1;letter-spacing:-.02em;text-transform:uppercase}
+.info__usps{display:grid;margin-top:26px;list-style:none}
+.info__usps li{display:grid;grid-template-columns:40px 1fr;column-gap:10px;row-gap:3px;padding:12px 0 14px;border-top:.8px solid rgba(255,255,255,.12)}
+.info__n{grid-row:span 2;font-family:var(--pixel);font-size:14.4px;letter-spacing:.02em;color:var(--line)}
+.info__usps b{font-family:var(--mori);font-weight:600;font-size:15.6px;letter-spacing:.01em;text-transform:uppercase}
+.info__usps p{font-family:var(--mori);font-weight:400;font-size:13.5px;line-height:1.45;color:rgba(255,255,255,.62)}
+.info__buy{display:flex;align-items:center;gap:12px;margin-top:18px}
+.info__price{min-width:110px;padding-right:8px;font-family:var(--mori);font-weight:600;font-size:28px;line-height:1;white-space:nowrap}
+.info__price.is-status{font-size:15.6px;letter-spacing:.01em;text-transform:uppercase;color:rgba(255,255,255,.62)}
 
 /* the small pixel-type buttons: two ticks, top right and bottom left */
 .tick{position:relative;display:inline-flex;align-items:center;padding:6.914px 11.524px;
@@ -354,79 +340,71 @@ html{scroll-padding-top:24px}
 .tick::before{right:0;top:0;border-width:.8px .8px 0 0}
 .tick::after{left:0;bottom:0;border-width:0 0 .8px .8px}
 .tick:active{transform:scale(.97)}
+.tick[aria-expanded="true"]{color:var(--line)}
 
-/* DETAILS opens the full product name and model code under the buy row */
-.row__more{display:grid;grid-template-rows:0fr;transition:grid-template-rows 240ms var(--ease-out)}
-.row__more > div{overflow:hidden}
-.row__more p{padding-top:14px;font-family:var(--mori);font-weight:400;font-size:12.5px;line-height:1.5;color:rgba(255,255,255,.62)}
-.row.is-open .row__more{grid-template-rows:1fr}
-.row [aria-expanded="true"]{color:var(--line)}
+/* DETAILS opens the full product name and model code */
+.more{display:grid;grid-template-rows:0fr;transition:grid-template-rows 240ms var(--ease-out)}
+.more > div{overflow:hidden}
+.more p{padding-top:14px;font-family:var(--mori);font-weight:400;font-size:12.5px;line-height:1.5;color:rgba(255,255,255,.62)}
+.more.is-open{grid-template-rows:1fr}
 
+/* ── cards ── */
+.cat__cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px;margin-top:40px;list-style:none}
+.card{position:relative;display:grid;gap:4px;width:100%;padding:12px 12px 14px;text-align:left;color:var(--white);
+  background:#0c0e16;border:.8px solid rgba(255,255,255,.12);
+  transition:border-color 200ms ease,transform 200ms var(--ease-out),box-shadow 200ms ease}
+.card__img{display:grid;place-items:center;aspect-ratio:4 / 3;margin-bottom:10px;background:#EEF0F2;overflow:hidden}
+.card__img img{width:88%;height:auto;transition:transform 400ms var(--ease-out)}
+.card__n{position:absolute;top:18px;right:18px;min-width:24px;height:24px;padding:0 4px;display:grid;place-items:center;
+  font-family:var(--pixel);font-size:12px;background:var(--route);color:#fff}
+.card__tag{font-family:var(--pixel);font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--line)}
+.card__name{font-family:var(--mori);font-weight:600;font-size:21px;line-height:1.05;letter-spacing:-.01em;text-transform:uppercase}
+.card__price{font-family:var(--mori);font-weight:600;font-size:14px;color:rgba(255,255,255,.7)}
+.card.is-active{border-color:var(--line);box-shadow:0 0 0 .8px var(--line)}
+.card:active{transform:scale(.98)}
 @media (hover:hover) and (pointer:fine){
-  .row:hover .row__shoe img{transform:translateY(-6px) rotate(-1.5deg)}
-  .row:hover .row__corner:nth-of-type(1){transform:translate(-4px,-4px)}
-  .row:hover .row__corner:nth-of-type(2){transform:translate(4px,-4px)}
-  .row:hover .row__corner:nth-of-type(3){transform:translate(-4px,4px)}
-  .row:hover .row__corner:nth-of-type(4){transform:translate(4px,4px)}
+  .card:hover{border-color:rgba(125,136,255,.6);transform:translateY(-3px)}
+  .card:hover .card__img img{transform:scale(1.05) rotate(-2deg)}
+  .card:hover:active{transform:translateY(-3px) scale(.98)}
   .tick:hover::before{transform:translate(2px,-2px)}
   .tick:hover::after{transform:translate(-2px,2px)}
 }
 
-/* rows arrive as they scroll in (only when JS is there to reveal them) */
+/* the shoe floats; the tilt toward the pointer is written by JS */
 @media (prefers-reduced-motion:no-preference){
-  .js .row:not(.is-in) .row__corner{opacity:0;transform:scale(1.6)}
-  .js .row:not(.is-in) .row__shoe img{opacity:0;transform:translateX(-48px) rotate(-3deg)}
-  .js .row--shoe-right:not(.is-in) .row__shoe img{transform:translateX(48px) rotate(3deg)}
-  .js .row:not(.is-in) .row__body > *,.js .row:not(.is-in) .row__usps li{opacity:0;transform:translateY(12px)}
-  .row__body > *,.row__usps li{transition:transform 600ms var(--ease-out),opacity 600ms var(--ease-out)}
-  .row.is-in .row__shoe img{transition-duration:900ms}
-  .row.is-in .row__tag{transition-delay:80ms}
-  .row.is-in .row__name{transition-delay:140ms}
-  .row.is-in .row__usps li{transition-delay:calc(220ms + var(--i) * 60ms)}
-  .row.is-in .row__buy{transition-delay:420ms}
-  .row.is-in .row__corner{transition-delay:120ms}
-  /* once in, hover and press answer immediately */
-  .row.is-settled .row__body > *,.row.is-settled .row__usps li,.row.is-settled .row__corner,.row.is-settled .row__shoe img{transition-delay:0ms}
-  .row.is-settled .row__shoe img{transition-duration:600ms}
-  /* the marker's "you are here" ring */
-  .series__marker::after{animation:ping 2200ms var(--ease-out) infinite}
+  .stage__float{animation:float 3200ms ease-in-out infinite alternate}
+  .stage__shadow{animation:shadow 3200ms ease-in-out infinite alternate}
 }
-@keyframes ping{from{opacity:.9;transform:scale(1)}to{opacity:0;transform:scale(2.2)}}
+@keyframes float{from{transform:translateY(6px) rotate(-1deg)}to{transform:translateY(-10px) rotate(1deg)}}
+@keyframes shadow{from{transform:scaleX(1);opacity:.9}to{transform:scaleX(.82);opacity:.6}}
 @media (prefers-reduced-motion:reduce){
-  .js .row:not(.is-in) .row__shoe img,.js .row:not(.is-in) .row__body > *,.js .row:not(.is-in) .row__corner{opacity:0}
-  .row__shoe img,.row__body > *,.row__corner{transition:opacity 300ms ease;transform:none!important}
-  .row__more{transition:none}
+  .card,.card__img img,.more{transition:none}
+  .card:active,.card:hover{transform:none}
 }
 
-/* narrower desktops: the two columns shrink together */
+/* narrower desktops */
 @media (max-width:1180px){
-  .row{grid-template-columns:minmax(0,433fr) minmax(0,542fr);column-gap:clamp(32px,6vw,106px);padding:0 clamp(20px,3vw,28px)}
-  .row--shoe-right{grid-template-columns:minmax(0,542fr) minmax(0,433fr)}
-  .row__name{font-size:clamp(38px,4.3vw,51px);line-height:1}
+  .cat__top{gap:32px}
+  .cat__cards{gap:12px}
+  .card__name{font-size:18px}
 }
 
-/* phones and portrait tablets: shoe on top, copy under it, the route art put away */
+/* phones and portrait tablets: stage, then details, then the cards as a swipe row */
 @media (max-width:900px){
-  .series{padding:72px 16px 96px}
-  .series__list{gap:56px}
-  .series__art{width:100%;left:0;translate:none}
-  .series__route,.series__marker,.series__contour--l{display:none}
-  .series__contour--r{left:auto;right:-160px;top:180px;opacity:.6}
-  .row,.row--shoe-right{grid-template-columns:1fr;row-gap:18px;padding:28px 20px 24px;min-height:0}
-  .row--shoe-right .row__shoe{order:0}
-  .row__shoe img{max-width:420px}
-  .row__body{min-height:0}
-  .row__name{font-size:38px}
-  .row__usps{margin-top:20px}
-  /* price on its own line, then the two actions side by side at thumb height */
-  .row__buy{display:grid;grid-template-columns:1fr 1fr;gap:12px 10px;margin-top:18px}
-  .row__price{grid-column:1 / -1;min-width:0}
+  .series{padding:64px 16px 80px}
+  .cat__top{grid-template-columns:1fr;gap:24px}
+  .stage{aspect-ratio:4 / 3}
+  .stage__tilt{width:86%}
+  .info__name{font-size:38px}
+  .info__buy{display:grid;grid-template-columns:1fr 1fr;gap:12px 10px}
+  .info__price{grid-column:1 / -1;min-width:0}
   .tick{justify-content:center;min-height:44px;padding:0 12px;font-size:12px}
-  /* phones: the feature names only, the detail lines are too much at this size */
-  .row__usps{row-gap:0}
-  .row__usps li{padding:10px 0}
-  .row__usps p{display:none}
-  .row__n{grid-row:auto}
+  .cat__cards{display:flex;gap:12px;margin:32px -16px 0;padding:2px 16px 4px;overflow-x:auto;overscroll-behavior-x:contain;
+    scroll-snap-type:x mandatory;scroll-padding-inline:16px;scrollbar-width:none;
+    -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent)}
+  .cat__cards::-webkit-scrollbar{display:none}
+  .cat__cards li{flex:0 0 58%;scroll-snap-align:start}
+  .cat__cards li:last-child{padding-right:28px;flex-basis:calc(58% + 28px)}
 }
 
 /* ═══════════════════════════════════════════════════════════════════

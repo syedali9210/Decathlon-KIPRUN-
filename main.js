@@ -102,94 +102,117 @@ document.querySelector('.scroll').addEventListener('click', () => {
   play();
 })();
 
-/* ── the series ─────────────────────────────────────────────── */
-
-// rows reveal once, a little before they're fully in view
+/* ── the series: stage + details for the selected shoe, five cards under it ── */
 (() => {
-  const rows = document.querySelectorAll('.row');
-  const reveal = (row) => {
-    row.classList.add('is-in');
-    // after the entrance, drop the stagger delays so hover and press answer at once
-    setTimeout(() => row.classList.add('is-settled'), 1400);
-  };
-  if (!('IntersectionObserver' in window)) { rows.forEach(reveal); return; }
-  const io = new IntersectionObserver((entries) => entries.forEach((e) => {
-    if (!e.isIntersecting) return;
-    reveal(e.target);
-    io.unobserve(e.target);
-  }), { rootMargin: '0px 0px -12% 0px', threshold: 0.2 });
-  rows.forEach((r) => io.observe(r));
-  // arriving by a hero pill or a deep link: show the target row straight away
-  const hit = location.hash && document.querySelector(`.row${CSS.escape(location.hash)}`);
-  if (hit) reveal(hit);
-})();
+  const section = document.getElementById('series');
+  const dataEl = document.getElementById('seriesData');
+  if (!section || !dataEl) return;
+  const data = JSON.parse(dataEl.textContent);
+  const q = (id) => document.getElementById(id);
+  const img = q('stageImg'), tilt = q('stageTilt'), stage = q('stage');
+  const tag = q('infoTag'), name = q('infoName'), usps = q('infoUsps'), price = q('infoPrice');
+  const link = q('infoLink'), moreBtn = q('infoMore'), moreBody = q('infoMoreBody'), full = q('infoFull'), model = q('stageModel');
+  const cards = [...section.querySelectorAll('.card')];
+  const EASE = 'cubic-bezier(.23,1,.32,1)';
+  let cur = 0, token = 0;
 
-// DETAILS opens the full product name and model code
-document.querySelectorAll('.row [aria-controls]').forEach((btn) => {
-  btn.addEventListener('click', () => {
-    const open = btn.getAttribute('aria-expanded') !== 'true';
-    btn.setAttribute('aria-expanded', String(open));
-    btn.closest('.row').classList.toggle('is-open', open);
+  // warm every stage image so a swap never waits on the network
+  data.forEach((s) => { const im = new Image(); im.src = `assets/series/${s.img}`; });
+
+  const esc = (t) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const setMore = (open) => { moreBtn.setAttribute('aria-expanded', String(open)); moreBody.classList.toggle('is-open', open); };
+  moreBtn.addEventListener('click', () => setMore(moreBtn.getAttribute('aria-expanded') !== 'true'));
+
+  const fill = (s) => {
+    tag.textContent = s.tag;
+    name.textContent = s.name;
+    usps.innerHTML = s.usps.map(([t, d], k) => `<li><span class="info__n">${String(k + 1).padStart(2, '0')}</span><b>${esc(t)}</b><p>${esc(d)}</p></li>`).join('');
+    price.textContent = s.price;
+    price.classList.toggle('is-status', !s.price.startsWith('₹'));
+    link.href = s.href;
+    full.innerHTML = `${esc(s.full)} · Model ${s.model}${s.note ? `<br>${esc(s.note)}` : ''}`;
+    model.textContent = `Model ${s.model}`;
+  };
+  const swapImg = (s) => { img.src = `assets/series/${s.img}`; img.width = s.w; img.height = s.h; img.alt = s.alt; };
+  const stop = (els) => els.forEach((el) => el.getAnimations().forEach((a) => a.cancel()));
+
+  const select = (k, instant = false) => {
+    if (k === cur || k < 0 || k >= data.length) return;
+    const dir = k > cur ? 1 : -1, s = data[k], t = ++token;
+    cur = k;
+    cards.forEach((c, i) => { c.classList.toggle('is-active', i === k); c.setAttribute('aria-pressed', String(i === k)); });
+    setMore(false);
+
+    if (instant || still.matches) {
+      // reduced motion: a plain, quick crossfade, no movement or blur
+      swapImg(s); fill(s);
+      if (!instant) [img, q('info')].forEach((el) => el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: 'ease' }));
+      return;
+    }
+    const lines = () => [tag, name, ...usps.children, price.parentNode];
+    stop([img, ...lines()]);
+    // out: fast, towards the side we're leaving; the blur hides the moment the two shoes would overlap
+    img.animate([{ opacity: 1, transform: 'none', filter: 'blur(0)' }, { opacity: 0, transform: `translateX(${-36 * dir}px)`, filter: 'blur(6px)' }],
+      { duration: 160, easing: EASE, fill: 'forwards' });
+    lines().forEach((el) => el.animate([{ opacity: 1, filter: 'blur(0)' }, { opacity: 0, filter: 'blur(3px)' }], { duration: 140, easing: EASE, fill: 'forwards' }));
+
+    setTimeout(async () => {
+      if (t !== token) return;
+      swapImg(s);
+      try { await img.decode(); } catch {}
+      if (t !== token) return;
+      fill(s);
+      stop([img, ...lines()]);
+      img.animate([{ opacity: 0, transform: `translateX(${36 * dir}px) scale(.97)`, filter: 'blur(6px)' }, { opacity: 1, transform: 'none', filter: 'blur(0)' }],
+        { duration: 520, easing: EASE });
+      lines().forEach((el, i) => el.animate([{ opacity: 0, transform: 'translateY(10px)', filter: 'blur(3px)' }, { opacity: 1, transform: 'none', filter: 'blur(0)' }],
+        { duration: 420, delay: 40 + i * 40, easing: EASE, fill: 'backwards' }));
+    }, 160);
+  };
+
+  cards.forEach((c, i) => c.addEventListener('click', () => {
+    select(i);
+    // on a phone the cards sit below the stage: bring the change into view
+    if (stage.getBoundingClientRect().top < 0) stage.scrollIntoView({ behavior: still.matches ? 'auto' : 'smooth', block: 'start' });
+  }));
+
+  // the hero pills and the photo panel link to #kipcore etc.: pick that shoe and bring the section up
+  const byId = (id) => data.findIndex((s) => s.id === id);
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href^="#"]');
+    const k = a ? byId(a.getAttribute('href').slice(1)) : -1;
+    if (k < 0) return;
+    e.preventDefault();
+    select(k);
+    history.replaceState(null, '', `#${data[k].id}`);
+    section.scrollIntoView({ behavior: still.matches ? 'auto' : 'smooth' });
   });
-});
+  const start = byId(location.hash.slice(1));
+  if (start >= 0) { select(start, true); section.scrollIntoView(); }
 
-/* The route: the square is "you are here". It rides the line at the height of the middle
-   of the screen; the line is grey above it (covered) and blue below (still to run).
-   The square glides on a spring rather than jumping with every scroll event. */
-(() => {
-  const svg = document.querySelector('.series__route');
-  const lit = document.getElementById('route');
-  const marker = document.getElementById('routeMarker');
-  const art = document.querySelector('.series__art');
-  if (!svg || !lit || !marker) return;
-  const on = matchMedia('(min-width: 901px)');
-  const VB_W = 1083.45, VB_H = 2416.81;
-
-  // sample the path once: [fraction along the path, x, y] in viewBox units.
-  // The path starts at the bottom of the section and climbs to the top.
-  const L = lit.getTotalLength();
-  const N = 700, pts = [];
-  for (let i = 0; i <= N; i++) { const p = lit.getPointAtLength((L * i) / N); pts.push([i / N, p.x, p.y]); }
-  const atY = (y) => {   // first sample from the top end whose y reaches the target
-    for (let i = N; i >= 0; i--) if (pts[i][2] >= y) return pts[i][0];
-    return 0;
-  };
-  // where Figma parks the square (758, 1520 on the 1482-wide frame)
-  const DESIGN = atY(1520 - 96.38);
-
-  let target = DESIGN, s = DESIGN, v = 0, raf = 0, last = 0;
-  const place = (f) => {
-    const i = Math.round(f * N), [, px, py] = pts[i];
-    const r = svg.getBoundingClientRect(), a = art.getBoundingClientRect();
-    const x = r.left - a.left + (px / VB_W) * r.width, y = r.top - a.top + (py / VB_H) * r.height;
-    marker.style.setProperty('--mx', `${x.toFixed(1)}px`);
-    marker.style.setProperty('--my', `${y.toFixed(1)}px`);
-    lit.style.setProperty('--lit', f.toFixed(4));
-  };
+  /* the shoe leans toward the pointer. Decorative, so it rides a spring (keeps momentum,
+     settles) rather than tracking 1:1; only with a real pointer and motion allowed */
+  const fine = matchMedia('(hover: hover) and (pointer: fine)');
+  let tx = 0, ty = 0, x = 0, y = 0, vx = 0, vy = 0, raf = 0, last = 0;
   const step = (t) => {
     const dt = Math.min(0.032, last ? (t - last) / 1000 : 0.016);
     last = t;
-    v += (140 * (target - s) - 22 * v) * dt;   // stiff, critically damped-ish: follows closely, no overshoot
-    s += v * dt;
-    place(s);
-    const moving = Math.abs(target - s) + Math.abs(v) > 0.0004;
+    vx += (120 * (tx - x) - 18 * vx) * dt; vy += (120 * (ty - y) - 18 * vy) * dt;
+    x += vx * dt; y += vy * dt;
+    tilt.style.transform = `rotateX(${y.toFixed(2)}deg) rotateY(${x.toFixed(2)}deg)`;
+    const moving = Math.abs(tx - x) + Math.abs(ty - y) + Math.abs(vx) + Math.abs(vy) > 0.01;
     raf = moving ? requestAnimationFrame(step) : 0;
     if (!moving) last = 0;
   };
-  const update = () => {
-    if (!on.matches) return;
-    if (still.matches) { place(DESIGN); return; }   // reduced motion: the design's resting state, no tracking
-    const r = svg.getBoundingClientRect();
-    const y = ((innerHeight / 2 - r.top) / r.height) * VB_H;
-    target = atY(Math.max(0, Math.min(VB_H, y)));
-    if (!raf) raf = requestAnimationFrame(step);
-  };
-  addEventListener('scroll', update, { passive: true });
-  addEventListener('resize', () => { place(s); update(); });
-  still.addEventListener('change', update);
-  on.addEventListener('change', update);
-  place(s);
-  update();
+  const kick = () => { if (!raf) raf = requestAnimationFrame(step); };
+  stage.addEventListener('pointermove', (e) => {
+    if (!fine.matches || still.matches) return;
+    const r = stage.getBoundingClientRect();
+    tx = ((e.clientX - r.left) / r.width - 0.5) * 18;
+    ty = -((e.clientY - r.top) / r.height - 0.5) * 12;
+    kick();
+  });
+  stage.addEventListener('pointerleave', () => { tx = 0; ty = 0; kick(); });
 })();
 
 /* ═══ film + main shoe (ported from the store build) ═══════════════════ */
