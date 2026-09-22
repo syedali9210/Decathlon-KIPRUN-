@@ -181,39 +181,49 @@
     </div>
   </section>
 
-  <!-- ─── main shoe: Kipride Max on a WebGL canvas, its three numbers stepping as you scroll (from the store build) ─── -->
-  <section class="max" id="feature" aria-labelledby="max-title">
-    <h2 class="sr-only" id="max-title">Kipride Max: comfort anywhere, anytime</h2>
-    <div class="max__sticky">
-      <img class="max__topo" src="assets/series/topo.svg" alt="" aria-hidden="true">
-      <div class="max__kanji" aria-hidden="true">MAX</div>
-      <div class="max__hud" aria-hidden="true"><span>SCAN [ON]</span><span>FRAME <b id="hudFrame">000</b> · FPS 30</span><span>KIPRIDE MAX // 8960547</span></div>
-      <div class="max__buy">
-        <span class="max__model">Model 8960547</span>
-        <b class="max__price">₹12,999</b>
-        <a class="tick" href="https://www.decathlon.in/p/8960547" target="_blank" rel="noopener"><span>View Kipride Max</span></a>
+  <!-- ─── layers: the Kipstorm Elite comes apart as you scroll; each layer's USP floats beside it
+       (Figma 46:615 → 46:618 → 46:621 → 46:624 → 46:628) ─── -->
+  <section class="lay" id="feature" aria-labelledby="lay-title">
+    <div class="lay__sticky">
+      <img class="lay__topo" src="assets/series/topo.svg" alt="" aria-hidden="true">
+      <div class="lay__kanji" aria-hidden="true">ELITE</div>
+      <header class="lay__head">
+        <p class="lay__eyebrow">Exploded view // 8961381</p>
+        <h2 class="lay__title" id="lay-title">Kipstorm Elite,<br> layer by layer</h2>
+        <p class="lay__step" aria-hidden="true">Layer <b id="layStep">01</b> / 05</p>
+        <span class="lay__bar" aria-hidden="true"><i id="layBar"></i></span>
+      </header>
+      <div class="lay__buy">
+        <span class="lay__model">Carbon race shoe</span>
+        <b class="lay__price">₹19,999</b>
+        <a class="tick" href="https://www.decathlon.in/p/8970785" target="_blank" rel="noopener"><span>View Kipstorm</span></a>
       </div>
-      <div class="max__stage">
-        <div class="max__shoe" id="featureShoe">
-          <div class="max__bob">
-            <img id="featureImg" src="assets/series/kipstorm.webp" width="1494" height="741" alt="Kiprun Kipstorm Elite carbon race shoe, yellow">
-            <canvas id="featureGl" aria-hidden="true"></canvas>
+      <div class="lay__stage">
+        <div class="lay__box" id="layBox">
+          <img class="lay__frame is-on" src="assets/layers/layer-1.webp" width="687" height="1024" alt="Kiprun Kipstorm Elite, taken apart into its layers: upper, insole, Fastech+ midsole, outsole">
+          <img class="lay__frame" src="assets/layers/layer-2.webp" width="687" height="1024" alt="" fetchpriority="low">
+          <img class="lay__frame" src="assets/layers/layer-3.webp" width="687" height="1024" alt="" fetchpriority="low">
+          <img class="lay__frame" src="assets/layers/layer-4.webp" width="687" height="1024" alt="" fetchpriority="low">
+          <img class="lay__frame" src="assets/layers/layer-5.webp" width="687" height="1024" alt="" fetchpriority="low">
+          <div class="co co--r" data-step="1" style="--x:87%;--y:41%">
+            <i class="co__dot" aria-hidden="true"></i><i class="co__line" aria-hidden="true"></i>
+            <div class="co__card"><span class="co__n">01</span><b>Light weight</b><p>Its featherweight of 215g (size 8) reduces fatigue and boosts performance.</p></div>
           </div>
-          <span class="max__shadow" aria-hidden="true"></span>
-          <i class="max__sel" aria-hidden="true"><b></b><b></b><b></b><b></b></i>
+          <div class="co co--l" data-step="2" style="--x:19%;--y:33%">
+            <i class="co__dot" aria-hidden="true"></i><i class="co__line" aria-hidden="true"></i>
+            <div class="co__card"><span class="co__n">02</span><b>Fitting comfort</b><p>Knitted upper and minimalist tongue for friction-free comfort.</p></div>
+          </div>
+          <div class="co co--r" data-step="3" style="--x:86%;--y:69%">
+            <i class="co__dot" aria-hidden="true"></i><i class="co__line" aria-hidden="true"></i>
+            <div class="co__card"><span class="co__n">03</span><b>Cushioning</b><p>Fastech+ foam for optimal protection, even over marathon distances.</p></div>
+          </div>
+          <div class="co co--l" data-step="4" style="--x:45%;--y:79%">
+            <i class="co__dot" aria-hidden="true"></i><i class="co__line" aria-hidden="true"></i>
+            <div class="co__card"><span class="co__n">04</span><b>Energy return</b><p>Fastech+ foam: propulsion and maximum energy return during the race.</p></div>
+          </div>
         </div>
       </div>
-      <ol class="max__specs" id="featureSpecs">
-        <li class="spec is-on"><span class="spec__n">01 / 03</span><b class="spec__metric">360°</b><span class="spec__title">Fitting comfort</span><p class="spec__text">Ultra-comfy 360° shoe: breathable mesh, 3D-knit tongue and reinforced collar.</p></li>
-        <li class="spec"><span class="spec__n">02 / 03</span><b class="spec__metric">271 g</b><span class="spec__title">Light weight</span><p class="spec__text">6% lighter than the KS900.2 (271g in size 42) for a lighter stride.</p></li>
-        <li class="spec"><span class="spec__n">03 / 03</span><b class="spec__metric">69 %</b><span class="spec__title">Cushioning</span><p class="spec__text">Softech+ foam with 69% energy return to boost your stride.</p></li>
-      </ol>
-    </div>
-    <div class="max__words" aria-hidden="true">
-      <span class="max__over">Kipride Max</span>
-      <span class="max__w">Comfort</span>
-      <span class="max__w">anywhere,</span>
-      <span class="max__w">anytime</span>
+      <div class="lay__now" id="layNow" aria-hidden="true"><span class="co__n">01</span><b></b><p></p></div>
     </div>
   </section>
 </main>

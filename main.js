@@ -215,117 +215,9 @@ document.querySelector('.scroll').addEventListener('click', () => {
   stage.addEventListener('pointerleave', () => { tx = 0; ty = 0; kick(); });
 })();
 
-/* ═══ film + main shoe (ported from the store build) ═══════════════════ */
+/* ═══ film (ported from the store build) + layers ═══════════════════ */
 const $ = (s) => document.querySelector(s);
 const REDUCED = still.matches;
-
-const FEATURE_VERT = `
-attribute vec2 p; varying vec2 vUv;
-void main(){ vUv = p * 0.5 + 0.5; gl_Position = vec4(p, 0.0, 1.0); }`;
-const FEATURE_FRAG = `
-precision mediump float;
-varying vec2 vUv;
-uniform sampler2D uTex;
-uniform vec2 uMouse;    // pointer in uv space
-uniform float uTime;
-uniform float uForce;   // 0 at rest, 1 right after the pointer moves
-void main(){
-  vec2 uv = vec2(vUv.x, 1.0 - vUv.y);
-  vec2 d = uv - uMouse;
-  float r = length(d);
-  vec2 dir = d / max(r, 0.0001);
-  // one ring travelling out of the cursor, fading with distance
-  float ring = sin(r * 22.0 - uTime * 3.2) * exp(-r * 5.0);
-  uv += dir * ring * 0.03 * (0.22 + uForce);
-  // a slow idle sway so it is alive before anyone touches it
-  uv.x += sin(uv.y * 7.0 + uTime * 0.6) * 0.0022;
-  vec2 shift = dir * 0.005 * uForce;
-  vec4 c = texture2D(uTex, clamp(uv, 0.001, 0.999));
-  float rr = texture2D(uTex, clamp(uv + shift, 0.001, 0.999)).r;
-  float bb = texture2D(uTex, clamp(uv - shift, 0.001, 0.999)).b;
-  gl_FragColor = vec4(rr, c.g, bb, c.a);
-}`;
-
-function initFeatureGl(src) {
-  const cv = $('#featureGl');
-  const img = $('#featureImg');
-  if (!cv || REDUCED) return;
-  const gl = cv.getContext('webgl', { alpha: true, premultipliedAlpha: false, antialias: true });
-  if (!gl) return;                                   // no WebGL: the <img> is already showing
-
-  const sh = (type, srcTxt) => { const o = gl.createShader(type); gl.shaderSource(o, srcTxt); gl.compileShader(o); return o; };
-  const prog = gl.createProgram();
-  gl.attachShader(prog, sh(gl.VERTEX_SHADER, FEATURE_VERT));
-  gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FEATURE_FRAG));
-  gl.linkProgram(prog);
-  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
-  gl.useProgram(prog);
-
-  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-  const loc = gl.getAttribLocation(prog, 'p');
-  gl.enableVertexAttribArray(loc);
-  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-  const uMouse = gl.getUniformLocation(prog, 'uMouse');
-  const uTime = gl.getUniformLocation(prog, 'uTime');
-  const uForce = gl.getUniformLocation(prog, 'uForce');
-  gl.enable(gl.BLEND);
-  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
-  const tex = gl.createTexture();
-  const im = new Image();
-  im.onload = () => {
-    gl.bindTexture(gl.TEXTURE_2D, tex);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, im);
-    cv.style.aspectRatio = `${im.naturalWidth} / ${im.naturalHeight}`;
-    img.classList.add('is-hidden');                  // hand over from the fallback
-    size();
-    start();
-  };
-  im.src = src;
-
-  const size = () => {
-    const dpr = Math.min(2, devicePixelRatio || 1);
-    const w = Math.round(cv.clientWidth * dpr), h = Math.round(cv.clientHeight * dpr);
-    if (w && h && (cv.width !== w || cv.height !== h)) { cv.width = w; cv.height = h; gl.viewport(0, 0, w, h); }
-  };
-  addEventListener('resize', size);
-
-  let mx = 0.5, my = 0.4, force = 0, raf = 0, t0 = performance.now();
-  addEventListener('pointermove', (e) => {
-    const r = cv.getBoundingClientRect();
-    if (!r.width) return;
-    mx = (e.clientX - r.left) / r.width;
-    my = (e.clientY - r.top) / r.height;
-    force = Math.min(1, force + 0.35);
-  }, { passive: true });
-
-  const hud = $('#hudFrame');
-  let hudN = 0;
-  const frame = () => {
-    raf = requestAnimationFrame(frame);
-    if (hud && !(++hudN % 2)) hud.textContent = String((hudN >> 1) % 1000).padStart(3, '0');
-    size();
-    force *= 0.96;
-    gl.uniform2f(uMouse, mx, my);
-    gl.uniform1f(uTime, (performance.now() - t0) / 1000);
-    gl.uniform1f(uForce, force);
-    gl.clearColor(0, 0, 0, 0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
-  };
-  const start = () => { if (!raf) frame(); };
-  const stop = () => { cancelAnimationFrame(raf); raf = 0; };
-  // only draw while the section is on screen
-  new IntersectionObserver((es) => es.forEach((e) => (e.isIntersecting ? start() : stop())), { threshold: 0 }).observe($('.max'));
-}
-
-
-if (document.getElementById('featureGl')) initFeatureGl('assets/series/kipstorm.webp');
 
 /* Film: portrait screens get the 9:16 cuts; only the on-screen clip plays. */
 (() => {
@@ -390,31 +282,62 @@ if (document.getElementById('featureGl')) initFeatureGl('assets/series/kipstorm.
   };
 })();
 
-/* Main shoe: the pinned stage steps its three numbers as the words scroll past;
-   the shoe turns and grows a little across the section, the MAX outline drifts up. */
+/* Layers: the section pins while the Kipstorm Elite comes apart. The five frames share one
+   framing; each fades in on top of the last, and the last only drops once the new one is
+   nearly there, so the shoe never goes see-through mid-change. Each layer's USP arrives
+   when its layer has separated. Reduced motion: frames switch without the crossfade. */
 (() => {
-  const section = document.querySelector('.max');
+  const section = document.querySelector('.lay');
   if (!section) return;
-  const shoe = document.getElementById('featureShoe');
-  const kanji = section.querySelector('.max__kanji');
-  const specs = [...section.querySelectorAll('.spec')];
-  const desk = matchMedia('(min-width: 901px)');
-  window.__maxScroll = () => {
-    if (!desk.matches) { shoe.style.transform = ''; kanji.style.transform = ''; return; }
+  const frames = [...section.querySelectorAll('.lay__frame')];
+  const cos = [...section.querySelectorAll('.co')];
+  const stepEl = document.getElementById('layStep'), bar = document.getElementById('layBar');
+  const now = document.getElementById('layNow');
+  const nowN = now.querySelector('.co__n'), nowT = now.querySelector('b'), nowP = now.querySelector('p');
+  const clamp = (x) => Math.max(0, Math.min(1, x));
+  frames[0].classList.remove('is-on');
+
+  let last = -1;
+  window.__layScroll = () => {
     const r = section.getBoundingClientRect(), vh = innerHeight;
     if (r.bottom < 0 || r.top > vh) return;
-    const p = Math.max(0, Math.min(1, -r.top / Math.max(1, r.height - vh)));
-    specs.forEach((s, k) => s.classList.toggle('is-on', k === Math.min(specs.length - 1, Math.floor(p * specs.length))));
-    if (REDUCED) return;
-    shoe.style.transform = `rotate(${(-10 + 15 * p).toFixed(2)}deg) scale(${(0.88 + 0.24 * p).toFixed(3)})`;
-    kanji.style.transform = `translateY(${(-16 * p).toFixed(2)}%)`;
+    const p = clamp(-r.top / Math.max(1, r.height - vh));
+    const f = Math.min(4, p * 4.6);                 // the last stretch of scroll holds the full explode
+    frames.forEach((im, i) => {
+      let o;
+      if (still.matches) o = i === Math.round(f) ? 1 : 0;
+      else {
+        const fadeIn = i === 0 ? 1 : clamp((f - (i - 0.6)) / 0.2);
+        const fadeOut = i === frames.length - 1 ? 1 : 1 - clamp((f - (i + 0.52)) / 0.1);
+        o = fadeIn * fadeOut;
+      }
+      im.style.opacity = o.toFixed(3);
+    });
+    bar.style.transform = `scaleX(${(f / 4).toFixed(3)})`;
+    const step = Math.round(f);
+    if (step === last) return;
+    last = step;
+    stepEl.textContent = String(step + 1).padStart(2, '0');
+    cos.forEach((c) => {
+      const s = +c.dataset.step;
+      c.classList.toggle('is-in', step >= s);
+      c.classList.toggle('is-now', step === s);
+    });
+    // phones show one USP at a time, under the shoe
+    const cur = cos.filter((c) => +c.dataset.step <= step).pop();
+    now.classList.toggle('is-in', !!cur);
+    if (cur) {
+      nowN.textContent = cur.querySelector('.co__n').textContent;
+      nowT.textContent = cur.querySelector('b').textContent;
+      nowP.textContent = cur.querySelector('p').textContent;
+    }
   };
 })();
 
 // one rAF-throttled scroll handler drives both
 (() => {
   let queued = false;
-  const tick = () => { queued = false; window.__filmScroll?.(); window.__maxScroll?.(); };
+  const tick = () => { queued = false; window.__filmScroll?.(); window.__layScroll?.(); };
   const ask = () => { if (!queued) { queued = true; requestAnimationFrame(tick); } };
   addEventListener('scroll', ask, { passive: true });
   addEventListener('resize', ask);
