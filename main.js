@@ -353,6 +353,21 @@ const REDUCED = still.matches;
   settle();
 })();
 
+/* The essentials: the cards arrive as you reach them, a beat apart. Reduced motion keeps
+   the fade and drops the movement (the CSS holds that); the delay is written per card. */
+(() => {
+  const kits = [...document.querySelectorAll('.kit')];
+  if (!kits.length) return;
+  const io = new IntersectionObserver((entries, obs) => {
+    entries.filter((e) => e.isIntersecting).forEach((e, i) => {
+      e.target.style.setProperty('--d', `${i * 60}ms`);
+      e.target.classList.add('is-in');
+      obs.unobserve(e.target);
+    });
+  }, { rootMargin: '0px 0px -12% 0px', threshold: 0.15 });
+  kits.forEach((k) => io.observe(k));
+})();
+
 // one rAF-throttled scroll handler drives both
 (() => {
   let queued = false;
