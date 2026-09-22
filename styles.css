@@ -470,7 +470,7 @@ html{scroll-padding-top:24px}
 .max__bob{position:relative}
 #featureImg{position:absolute;inset:0;width:100%;height:auto}
 #featureImg.is-hidden{visibility:hidden}
-#featureGl{display:block;width:100%;height:auto;aspect-ratio:1169 / 571;filter:drop-shadow(0 30px 44px rgba(0,0,0,.7))}
+#featureGl{display:block;width:100%;height:auto;aspect-ratio:1494 / 741;filter:drop-shadow(0 30px 44px rgba(0,0,0,.7))}
 .max__shadow{position:absolute;left:16%;right:16%;bottom:-4%;height:9%;border-radius:50%;
   background:radial-gradient(closest-side,rgba(0,0,0,.75),transparent);filter:blur(6px)}
 /* the hero's dashed selection frame, tracking the shoe */

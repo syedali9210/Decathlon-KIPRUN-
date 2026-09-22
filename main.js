@@ -302,7 +302,7 @@ function initFeatureGl(src) {
 }
 
 
-if (document.getElementById('featureGl')) initFeatureGl('assets/series/kipride-max.webp');
+if (document.getElementById('featureGl')) initFeatureGl('assets/series/kipstorm.webp');
 
 /* Film: portrait screens get the 9:16 cuts; only the on-screen clip plays. */
 (() => {
