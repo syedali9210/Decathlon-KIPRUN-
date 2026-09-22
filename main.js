@@ -282,56 +282,75 @@ const REDUCED = still.matches;
   };
 })();
 
-/* Layers: the section pins while the Kipstorm Elite comes apart. The five frames share one
-   framing; each fades in on top of the last, and the last only drops once the new one is
-   nearly there, so the shoe never goes see-through mid-change. Each layer's USP arrives
-   when its layer has separated. Reduced motion: frames switch without the crossfade. */
+/* Layers: the section pins while the Kipstorm Elite comes apart. It starts as the assembled
+   shoe, which hands over to six separate layers stacked back into it; each layer then slides
+   out to its place on its own stretch of the scroll (outsole first, the carbon rods last),
+   eased in and out. The scroll position is followed through a smoothing step, so notched
+   wheels and trackpad bursts read as one continuous movement. Each layer's USP arrives once
+   it has separated. Reduced motion: shown fully apart, not pinned, nothing moves. */
 (() => {
   const section = document.querySelector('.lay');
   if (!section) return;
-  const frames = [...section.querySelectorAll('.lay__frame')];
-  const cos = [...section.querySelectorAll('.co')];
+  const box = document.getElementById('layBox');
+  const whole = box.querySelector('.lay__whole');
+  const layers = [...box.querySelectorAll('.ly')].map((el) => ({
+    el, dy: +el.dataset.dy, a: +el.dataset.a, b: +el.dataset.b, late: 'late' in el.dataset,
+  }));
+  const cos = [...section.querySelectorAll('.co')].sort((x, y) => x.dataset.at - y.dataset.at);
+  const items = [...section.querySelectorAll('.lay__now li')];
   const stepEl = document.getElementById('layStep'), bar = document.getElementById('layBar');
-  const now = document.getElementById('layNow');
-  const nowN = now.querySelector('.co__n'), nowT = now.querySelector('b'), nowP = now.querySelector('p');
   const clamp = (x) => Math.max(0, Math.min(1, x));
-  frames[0].classList.remove('is-on');
+  const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);   // in-out cubic
+  const span = (p, a, b) => ease(clamp((p - a) / (b - a)));
+  let unit = 0;
+  const measure = () => { unit = box.getBoundingClientRect().height / 1024; };
 
-  let last = -1;
-  window.__layScroll = () => {
-    const r = section.getBoundingClientRect(), vh = innerHeight;
-    if (r.bottom < 0 || r.top > vh) return;
-    const p = clamp(-r.top / Math.max(1, r.height - vh));
-    const f = Math.min(4, p * 4.6);                 // the last stretch of scroll holds the full explode
-    frames.forEach((im, i) => {
-      let o;
-      if (still.matches) o = i === Math.round(f) ? 1 : 0;
-      else {
-        const fadeIn = i === 0 ? 1 : clamp((f - (i - 0.6)) / 0.2);
-        const fadeOut = i === frames.length - 1 ? 1 : 1 - clamp((f - (i + 0.52)) / 0.1);
-        o = fadeIn * fadeOut;
-      }
-      im.style.opacity = o.toFixed(3);
+  let shown = -1;
+  const render = (p) => {
+    if (!unit) measure();
+    const stack = span(p, 0.03, 0.1);            // the layers fade up under the assembled shoe...
+    whole.style.opacity = (1 - span(p, 0.06, 0.13)).toFixed(3);   // ...which then fades away over them
+    layers.forEach((L) => {
+      const t = span(p, L.a, L.b);
+      // parts that sit inside the shoe only appear as they start to come out
+      L.el.style.opacity = (L.late ? span(p, L.a, L.a + 0.08) : stack).toFixed(3);
+      L.el.style.transform = `translate3d(0,${((1 - t) * L.dy * unit).toFixed(2)}px,0)`;
     });
-    bar.style.transform = `scaleX(${(f / 4).toFixed(3)})`;
-    const step = Math.round(f);
-    if (step === last) return;
-    last = step;
-    stepEl.textContent = String(step + 1).padStart(2, '0');
-    cos.forEach((c) => {
-      const s = +c.dataset.step;
-      c.classList.toggle('is-in', step >= s);
-      c.classList.toggle('is-now', step === s);
-    });
-    // phones show one USP at a time, under the shoe
-    const cur = cos.filter((c) => +c.dataset.step <= step).pop();
-    now.classList.toggle('is-in', !!cur);
-    if (cur) {
-      nowN.textContent = cur.querySelector('.co__n').textContent;
-      nowT.textContent = cur.querySelector('b').textContent;
-      nowP.textContent = cur.querySelector('p').textContent;
-    }
+    bar.style.transform = `scaleX(${clamp((p - 0.1) / 0.7).toFixed(3)})`;
+    const n = cos.filter((c) => p >= +c.dataset.at).length;
+    if (n === shown) return;
+    shown = n;
+    stepEl.textContent = String(n + 1).padStart(2, '0');
+    cos.forEach((c, i) => { c.classList.toggle('is-in', i < n); c.classList.toggle('is-now', i === n - 1); });
+    items.forEach((li, i) => li.classList.toggle('is-on', still.matches || i === n - 1));
   };
+
+  let target = 0, cur = 0, raf = 0, last = 0;
+  const tick = (t) => {
+    const dt = Math.min(0.05, last ? (t - last) / 1000 : 0.016);
+    last = t;
+    cur += (target - cur) * (1 - Math.exp(-dt * 8));   // frame-rate independent, ~0.3s to catch up
+    if (Math.abs(target - cur) < 0.0004) cur = target;
+    render(cur);
+    raf = cur === target ? 0 : requestAnimationFrame(tick);
+    if (!raf) last = 0;
+  };
+  window.__layScroll = () => {
+    if (still.matches) return;
+    const r = section.getBoundingClientRect(), vh = innerHeight;
+    if (r.bottom < -vh || r.top > 2 * vh) return;
+    target = clamp(-r.top / Math.max(1, r.height - vh));
+    if (!raf) raf = requestAnimationFrame(tick);
+  };
+  const settle = () => {
+    measure();
+    if (still.matches) { cancelAnimationFrame(raf); raf = 0; cur = target = 1; items.forEach((li) => li.classList.add('is-on')); render(1); return; }
+    render(cur);
+    window.__layScroll();
+  };
+  addEventListener('resize', settle);
+  still.addEventListener('change', () => { shown = -1; settle(); });
+  settle();
 })();
 
 // one rAF-throttled scroll handler drives both

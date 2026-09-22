@@ -458,8 +458,11 @@ html{scroll-padding-top:24px}
 /* the frames are 687×1024 and share one framing, so stacking them and crossfading reads as the shoe coming apart;
    the box is as tall as the screen allows while leaving room for the callouts either side */
 .lay__box{position:relative;aspect-ratio:687 / 1024;height:min(92vh,900px,calc((100vw - 2 * var(--reach) - 48px) * 1.4905))}
-.lay__frame{position:absolute;inset:0;width:100%;height:100%;opacity:0;will-change:opacity}
-.lay__frame.is-on{opacity:1}   /* before JS runs */
+/* the assembled shoe, then the six layers cut from the exploded frame. Each layer sits at its exploded
+   position; JS offsets it back into the shoe and lets it slide out with the scroll */
+.lay__whole{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.ly{position:absolute;left:0;width:100%;top:var(--top);height:var(--h);opacity:0;will-change:transform,opacity}
+.ly > img{display:block;width:100%;height:100%;pointer-events:none}
 
 /* ── callouts: a handle on the layer, a leader line, the USP ── */
 .co{position:absolute;top:var(--y);z-index:2;display:flex;align-items:center;translate:0 -50%;pointer-events:none}
@@ -523,17 +526,30 @@ html{scroll-padding-top:24px}
   .lay__stage{position:relative;inset:auto;flex:1;min-height:0}
   .lay__box{height:100%;max-width:100%}
   .co{display:none}
-  .lay__now{display:grid;grid-template-columns:34px 1fr;column-gap:8px;row-gap:3px;min-height:86px;padding-top:10px;
-    border-top:.8px solid rgba(255,255,255,.14);transition:opacity 200ms ease}
+  /* one USP at a time under the shoe: the latest layer's */
+  .lay__now{display:grid;min-height:86px;list-style:none;border-top:.8px solid rgba(255,255,255,.14)}
+  .lay__now li{grid-area:1 / 1;display:grid;grid-template-columns:34px 1fr;column-gap:8px;row-gap:3px;padding-top:10px;
+    opacity:0;transform:translateY(6px);transition:opacity 200ms ease,transform 200ms var(--ease-out)}
+  .lay__now li.is-on{opacity:1;transform:none;transition:opacity 300ms ease 80ms,transform 300ms var(--ease-out) 80ms}
   .lay__now .co__n{grid-row:span 2}
   .lay__now b{font-family:var(--mori);font-weight:600;font-size:15.6px;text-transform:uppercase}
   .lay__now p{font-family:var(--mori);font-weight:400;font-size:13px;line-height:1.45;color:rgba(255,255,255,.62)}
-  .lay__now:not(.is-in){opacity:0}
   .lay__buy{position:static;display:flex;align-items:center;justify-content:space-between;gap:12px}
   .lay__model{display:none}
   .lay__price{font-size:28px}
   .lay__buy .tick{min-height:44px;padding:0 14px;font-size:12px}
 }
+/* reduced motion: no scroll-driven movement. The section isn't pinned; the shoe shows fully
+   taken apart with every USP beside it (phones: listed under it) */
 @media (prefers-reduced-motion:reduce){
-  .co__dot,.co__line,.co__card,.lay__now{transition:opacity 200ms ease}
+  .lay{height:auto}
+  .lay__sticky{position:relative;height:auto;min-height:100vh}
+  .co__dot,.co__line,.co__card{transition:none}
+  .lay__now li{opacity:1;transform:none;transition:none}
+}
+@media (prefers-reduced-motion:reduce) and (max-width:900px){
+  .lay__sticky{min-height:0}
+  .lay__stage{flex:none;height:62svh}
+  .lay__now{gap:12px}
+  .lay__now li{grid-area:auto}
 }
