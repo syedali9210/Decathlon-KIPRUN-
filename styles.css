@@ -1,0 +1,394 @@
+/* KIPRUN hero — Figma "Untitled", Container 24:1736 (1481.6 × 780).
+   Desktop keeps the frame's proportions: every box is placed in % of the frame,
+   and type is sized in cqi (1cqi = 1% of the hero's width = 14.816px at design size). */
+
+@font-face{font-family:PPMori;src:url("assets/fonts/PPMori-Book.ttf") format("truetype");font-weight:300;font-display:swap}
+@font-face{font-family:PPMori;src:url("assets/fonts/PPMori-Regular.ttf") format("truetype");font-weight:400;font-display:swap}
+@font-face{font-family:PPMori;src:url("assets/fonts/PPMori-SemiBold.otf") format("opentype");font-weight:600;font-display:swap}
+@font-face{font-family:Zpix;src:url("assets/fonts/Zpix.woff2") format("woff2");font-weight:400;font-display:swap}
+
+:root{
+  --bg:#060608;
+  --handle-bg:#06070D;
+  --line:#7D88FF;
+  --route:#2F5ED8;
+  --white:#fff;
+  --sans:"Open Sans",Arial,sans-serif;
+  --mori:PPMori,Arial,sans-serif;
+  --pixel:Zpix,"Courier New",monospace;
+  --condensed:"Helvetica Neue Condensed","Roboto Condensed","Arial Narrow",sans-serif;   /* Figma: Helvetica Compressed */
+  /* motion: strong custom curves, never the built-in ones */
+  --ease-out:cubic-bezier(.23,1,.32,1);
+  --ease-in-out:cubic-bezier(.77,0,.175,1);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--white);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+ul{list-style:none}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+:focus-visible{outline:2px solid var(--line);outline-offset:4px}
+
+/* ── the frame ── */
+.hero{
+  position:relative;width:100%;overflow:hidden;
+  /* the Figma frame's ratio, but never shorter than the screen */
+  height:max(100svh, calc(100vw * 780 / 1481.6));
+  container-type:size;   /* explicit height, so size containment is safe; the verticals need cqh */
+  background:
+    linear-gradient(180deg,rgba(14,19,48,.3) 0%,rgba(14,19,48,0) 22%,transparent 22%,transparent 78%,rgba(14,19,48,0) 78%,rgba(14,19,48,.35) 100%),
+    var(--bg);
+}
+
+/* ── background photo: full bleed at the bottom of the stack ── */
+.picture{position:absolute;inset:0;overflow:hidden}
+.picture > span{position:relative;display:block;width:100%;height:100%;will-change:transform}
+/* one photo per series, stacked; the active one is .is-on. Each image box runs 115% wide from the
+   left, so the runner lands in the open right half rather than behind the panels. The incoming
+   photo fades in while it settles from a slight zoom; the outgoing one just fades. */
+.picture img{position:absolute;left:0;top:0;width:115%;height:100%;max-width:none;object-fit:cover;object-position:var(--pos,0% 30%);
+  opacity:0;transform:scale(1.06);transition:opacity 1000ms ease,transform 5200ms var(--ease-out)}
+.picture img.is-on{opacity:1;transform:scale(1)}
+/* darkest behind the lockup and the text on the left, opening up over the runner on the right */
+.picture::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    linear-gradient(90deg,rgba(6,6,8,.82) 0%,rgba(6,6,8,.6) 40%,rgba(6,6,8,.18) 66%,rgba(6,6,8,.4) 100%),
+    linear-gradient(180deg,rgba(14,19,48,.5) 0%,rgba(6,6,8,0) 22%,rgba(6,6,8,0) 68%,rgba(6,6,8,.75) 100%)}
+
+/* ── dashed construction grid: the exported 22/22 dashes, at half their Figma strength ── */
+.grid{position:absolute;inset:0;pointer-events:none;opacity:.5}
+.grid__v,.grid__h{position:absolute;display:block}
+.grid__v{top:0;bottom:0;left:var(--x);width:1px}
+.grid__v img{position:absolute;left:0;top:0;width:100cqh;height:1px;max-width:none;transform-origin:0 0;transform:rotate(90deg)}
+.grid__h{left:0;right:0;top:var(--y);height:1px}
+.grid__h--mid{left:-.61%;right:.58%}
+.grid__h img{width:100%;height:1px}
+
+/* ── nav ── */
+.nav{
+  position:absolute;top:2.18%;left:1.69%;right:1.65%;height:7.6%;
+  display:flex;align-items:center;justify-content:space-between;gap:1.11cqi;z-index:2;
+}
+.nav__logo{display:block;width:10cqi}
+.nav__logo img{width:100%;height:auto}
+.nav__pills{display:flex;gap:.389cqi}
+/* Apparel is a category, not a shoe: a little air separates it from the five series */
+.nav__apparel{margin-left:.9cqi;padding-left:.9cqi;border-left:.8px solid rgba(255,255,255,.28)}
+.pill{
+  display:flex;align-items:center;height:max(26px,2.227cqi);padding:0 max(11px,1.098cqi);
+  border:.8px solid var(--white);border-radius:999px;
+  font-size:max(10px,.8444cqi);line-height:1.2;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;
+  transition:background-color 200ms ease,color 200ms ease,transform 160ms var(--ease-out);
+}
+
+/* ── lockup + dashed selection frame (frame box = 2.02% / 17.05%, 47.72% wide) ── */
+.lockup{position:absolute;left:2.02%;top:17.05%;width:47.72%;aspect-ratio:707 / 183}
+/* Figma's dashed stroke is 9px on / 9px off; a css dashed border can't set that, so it is drawn */
+.lockup::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    repeating-linear-gradient(90deg,var(--line) 0 9px,transparent 9px 18px) top / 100% .8px no-repeat,
+    repeating-linear-gradient(90deg,var(--line) 0 9px,transparent 9px 18px) bottom / 100% .8px no-repeat,
+    repeating-linear-gradient(180deg,var(--line) 0 9px,transparent 9px 18px) left / .8px 100% no-repeat,
+    repeating-linear-gradient(180deg,var(--line) 0 9px,transparent 9px 18px) right / .8px 100% no-repeat;
+}
+.lockup h1{position:absolute;inset:0;font-weight:inherit}
+.lockup__logo{position:absolute;left:.86%;top:12.57%;width:99.7%;height:57.9%}
+.lockup__logo img{width:100%;height:100%}
+/* "KIPRUN by Decathlon": BY in light caps, then the Decathlon mark (the identity's endorsement rule) */
+.lockup__tag{
+  position:absolute;left:6.94%;top:76.5%;display:flex;align-items:center;gap:.5em;
+  font-family:PPMori,var(--sans);font-weight:300;font-size:1.6627cqi;line-height:1;letter-spacing:.04em;white-space:nowrap;
+}
+.lockup__tag img{height:1.05em;width:auto}
+.lockup > i{position:absolute;width:11px;height:10px;background:var(--handle-bg);border:.8px solid var(--line)}
+.lockup > i:nth-of-type(1){left:-5px;top:-5px}
+.lockup > i:nth-of-type(2){right:-5px;top:-5px}
+.lockup > i:nth-of-type(3){right:-5px;bottom:-5px}
+.lockup > i:nth-of-type(4){left:-5px;bottom:-5px}
+
+/* ── Rectangle 22: the campaign crop. Same band Figma shows: the KIPRUN logo baked
+   into the photo's bottom edge stays out of frame ── */
+.campaign{position:absolute;left:2.02%;top:50.26%;width:47.72%;aspect-ratio:707 / 353;overflow:hidden;display:block}
+/* the panel changes in step with the background: same series, a closer shot */
+.campaign img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:var(--pos,50% 50%);
+  opacity:0;transition:opacity 900ms ease,transform 700ms var(--ease-out)}
+.campaign img.is-on{opacity:1}
+.campaign::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(0deg,rgba(6,6,8,.72) 0%,rgba(6,6,8,0) 48%)}
+.campaign__cap{position:absolute;left:5.8%;bottom:9%;z-index:1;display:grid;gap:.35em;transition:opacity 220ms ease,filter 220ms ease}
+.campaign__cap small{font-family:var(--pixel);font-size:max(10px,.78cqi);letter-spacing:.06em;text-transform:uppercase;color:var(--line)}
+.campaign__cap b{font-family:var(--mori);font-weight:600;font-size:max(20px,2.3cqi);line-height:.95;letter-spacing:-.01em;text-transform:uppercase}
+.campaign__count{position:absolute;right:3.2%;top:6%;z-index:1;font-family:var(--pixel);font-size:max(10px,.74cqi);letter-spacing:.06em;color:rgba(255,255,255,.7)}
+.campaign__count b{font-weight:400;color:var(--white)}
+.campaign.is-swapping .campaign__cap{opacity:0;filter:blur(3px)}
+
+/* ── right column ── */
+.intro{
+  position:absolute;left:83.36%;top:65.51%;width:14.78%;z-index:1;
+  font-weight:700;font-size:max(10px,.8444cqi);line-height:1.2;letter-spacing:.04em;text-transform:uppercase;
+}
+
+/* bracket buttons: four 9–10px corner marks */
+.bracket{position:absolute;display:flex;align-items:center;justify-content:center;z-index:1;
+  transition:transform 160ms var(--ease-out)}
+.bracket > i{position:absolute;width:10px;height:10px;border:0 solid var(--white);pointer-events:none;
+  transition:transform 200ms var(--ease-out)}
+.bracket > i:nth-of-type(1){left:0;top:0;border-width:.8px 0 0 .8px}
+.bracket > i:nth-of-type(2){right:0;top:0;border-width:.8px .8px 0 0}
+.bracket > i:nth-of-type(3){right:0;bottom:0;border-width:0 .8px .8px 0}
+.bracket > i:nth-of-type(4){left:0;bottom:0;border-width:0 0 .8px .8px}
+
+.cta{left:84.23%;top:86.92%;width:max(12.22%,150px);height:max(5%,39px)}
+.cta span{font-family:var(--condensed);font-weight:700;font-size:max(11px,.8889cqi);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+
+/* sits on the campaign's bottom-right corner (its top 50.26% of the height + 353/707 of 47.72% of the width) */
+.scroll{left:50%;top:calc(50.26cqh + 23.66cqi);width:3.915cqi;height:2.632cqi;min-width:44px;min-height:32px;translate:-50% -50%}
+.scroll img{width:1.35cqi;min-width:15px;height:auto;transform:rotate(90deg)}
+
+/* ══ interaction ══ */
+/* press feedback on every pointer; hover only where a real hover exists (taps fire false hovers) */
+.pill:active,.bracket:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){
+  .pill:hover{background-color:var(--white);color:var(--bg)}
+  .bracket:hover > i:nth-of-type(1){transform:translate(-3px,-3px)}
+  .bracket:hover > i:nth-of-type(2){transform:translate(3px,-3px)}
+  .bracket:hover > i:nth-of-type(3){transform:translate(3px,3px)}
+  .bracket:hover > i:nth-of-type(4){transform:translate(-3px,3px)}
+  .campaign:hover img{transform:scale(1.03)}
+}
+
+/* ══ entrance: one orchestrated reveal, ~1.5s, marketing-paced ══
+   Everything ends on its resting style, so fill-mode is `backwards`: after the
+   entrance the element is back on its own transitions (hover, press) instead of
+   being pinned by a finished animation. */
+@media (prefers-reduced-motion:no-preference){
+  /* grid lines draw along their own axis */
+  .grid__v{animation:drawDown 900ms var(--ease-in-out) calc(var(--i) * 60ms) backwards}
+  .grid__h{animation:drawAcross 900ms var(--ease-in-out) calc(100ms + var(--i) * 60ms) backwards}
+
+  .nav__logo{animation:rise 500ms var(--ease-out) 150ms backwards}
+  .nav__pills li{animation:rise 500ms var(--ease-out) calc(200ms + var(--i) * 50ms) backwards}
+
+  /* the selection frame draws from its top-left corner, the handles land as it passes them, then the mark wipes in */
+  .lockup::before{animation:frameDraw 800ms var(--ease-in-out) 250ms backwards}
+  .lockup > i{animation:handle 260ms var(--ease-out) backwards}
+  .lockup > i:nth-of-type(1){animation-delay:300ms}
+  .lockup > i:nth-of-type(2){animation-delay:640ms}
+  .lockup > i:nth-of-type(3){animation-delay:980ms}
+  .lockup > i:nth-of-type(4){animation-delay:980ms}
+  .lockup__logo{animation:wipe 800ms var(--ease-in-out) 420ms backwards}
+  .lockup__tag{animation:rise 500ms var(--ease-out) 850ms backwards}
+
+  /* photos: a clip reveal, the image settling from a slight zoom inside it */
+  .campaign{animation:revealUp 1000ms var(--ease-in-out) 350ms backwards}
+  .campaign img{animation:settle 1400ms var(--ease-out) 350ms backwards}
+  .picture{animation:fade 900ms var(--ease-out) backwards}
+  .picture img{animation:settle 1600ms var(--ease-out) backwards}
+
+  .intro{animation:rise 600ms var(--ease-out) 750ms backwards}
+  .cta{animation:fade 500ms var(--ease-out) 850ms backwards}
+  .cta > i{animation:bracketIn 600ms var(--ease-out) 850ms backwards}
+  .scroll{animation:fade 500ms var(--ease-out) 1050ms backwards}
+  /* the only loop on the page: a small, slow nudge that says "there's more" */
+  .scroll img{animation:nudge 2400ms ease-in-out 1600ms infinite}
+}
+@keyframes drawDown{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0)}}
+@keyframes drawAcross{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0)}}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}}
+@keyframes fade{from{opacity:0}}
+@keyframes frameDraw{from{clip-path:inset(0 100% 100% 0)}to{clip-path:inset(0)}}
+@keyframes handle{from{opacity:0;transform:scale(.6)}}
+@keyframes wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0)}}
+@keyframes revealUp{from{clip-path:inset(100% 0 0 0)}to{clip-path:inset(0)}}
+@keyframes settle{from{transform:scale(1.15)}}
+@keyframes bracketIn{from{opacity:0;transform:scale(1.6)}}
+@keyframes nudge{0%,100%{transform:rotate(90deg) translateX(0)}50%{transform:rotate(90deg) translateX(4px)}}
+
+/* reduced motion: fewer, gentler — no movement, no clip sweeps, no loop; plain fades so nothing pops */
+@media (prefers-reduced-motion:reduce){
+  .nav,.lockup,.campaign,.picture,.intro,.cta,.scroll,.grid{animation:fade 300ms ease backwards}
+  .lockup,.campaign,.picture{animation-delay:80ms}
+  .intro,.cta,.scroll{animation-delay:160ms}
+  .pill,.bracket,.bracket > i,.campaign img{transition-property:background-color,color}
+  .picture img,.picture img.is-on{transform:none;transition:none}
+  .pill:active,.bracket:active{transform:none}
+}
+
+/* ══ phones and portrait tablets: one column, reading order, thumb-sized targets ══ */
+@media (max-width:900px){
+  .hero{height:auto;min-height:100svh;container-type:inline-size;display:flex;flex-direction:column;gap:20px;padding:16px 16px 32px}
+  /* the column runs past a screen: dashes are drawn, not stretched from the 780px svg */
+  .grid__v img{display:none}
+  .grid__v{background:repeating-linear-gradient(180deg,var(--line) 0 22px,transparent 22px 44px)}
+  .grid__v:nth-child(2),.grid__v:nth-child(4),.grid__h{display:none}
+
+  .nav{order:1;position:static;height:auto;flex-direction:column;align-items:stretch;gap:14px}
+  .nav__logo{width:132px}
+  /* the five series in one swipeable row; the fading right edge says it scrolls */
+  .nav__pills{
+    gap:8px;margin:0 -16px;padding:2px 16px;overflow-x:auto;overscroll-behavior-x:contain;
+    scroll-snap-type:x proximity;scroll-padding-inline:16px;scrollbar-width:none;
+    -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent);
+            mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent);
+  }
+  .nav__pills::-webkit-scrollbar{display:none}
+  .nav__pills li{flex:0 0 auto;scroll-snap-align:start}
+  .nav__pills li:last-child{padding-right:32px}
+  .pill{height:40px;padding:0 16px;font-size:12px}
+
+  .lockup{order:2;position:relative;left:auto;top:auto;width:100%;margin-top:4px}
+  .lockup__tag{font-size:3.2cqi}
+  /* the photo stays the background: framed on the runner, dark at the top and foot where the type sits */
+  .picture img{width:100%;object-position:60% 50%}   /* portrait: centred on the runner */
+  .picture::after{background:linear-gradient(180deg,rgba(6,6,8,.85) 0%,rgba(6,6,8,.55) 28%,rgba(6,6,8,.08) 48%,rgba(6,6,8,.45) 68%,rgba(6,6,8,.9) 100%)}
+  .campaign{display:none}
+  /* copy and action gather at the foot of the screen; the runner shows through the space above them */
+  .intro{order:4;position:static;width:auto;max-width:24em;font-size:13px;line-height:1.35;margin-top:auto}
+  /* the primary action rides the bottom of the screen, where the thumb already is */
+  .cta{order:5;position:relative;left:auto;top:auto;width:100%;height:52px}
+  .cta span{font-size:15px}
+  /* nothing below the fold to scroll to on a phone */
+  .scroll{display:none}
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   The five series — Figma "Untitled", Container 24:1794 (1482 × 2593)
+   ═══════════════════════════════════════════════════════════════════ */
+html{scroll-padding-top:24px}
+@media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
+
+.series{
+  position:relative;overflow:hidden;padding:128px 24px 185px;
+  background:
+    linear-gradient(180deg,rgba(14,19,48,.3) 0%,rgba(14,19,48,0) 22%,transparent 22%,transparent 78%,rgba(14,19,48,0) 78%,rgba(14,19,48,.35) 100%),
+    var(--bg);
+}
+
+/* decoration sits in a 1482px box centred on the rows, so it stays registered to them at any width */
+.series__art{position:absolute;top:0;bottom:0;left:50%;width:1482px;translate:-50% 0;pointer-events:none}
+.series__contour{position:absolute;max-width:none}
+.series__contour--l{left:77px;top:333px;width:680px;height:634.84px}
+.series__contour--r{left:1089px;top:629px;width:511.5px;height:644px}
+/* the route: grey where you have been, Decathlon blue where it still runs; the square is you */
+.series__route{position:absolute;left:84.34px;top:96.38px;width:1081.45px;height:calc(100% - 178.4px);overflow:visible}
+.series__route path{fill:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.series__route .route__base{stroke:#313131}
+.series__route .route__lit{stroke:var(--route);stroke-dasharray:var(--lit,.59) 2}
+.series__marker{position:absolute;left:0;top:0;width:23px;height:23px;margin:-11.5px 0 0 -11.5px;background:#2D60DE;will-change:transform;
+  transform:translate3d(var(--mx,758px),var(--my,1520px),0)}
+.series__marker::after{content:"";position:absolute;inset:-1px;border:1px solid #2D60DE}
+
+.series__list{position:relative;display:grid;gap:149px;max-width:1132px;margin:0 auto;list-style:none}
+
+/* one row: shoe and copy either side of a 106px gap, framed by four corner ticks */
+.row{
+  position:relative;display:grid;grid-template-columns:433px 542.3px;column-gap:106px;
+  justify-content:center;align-items:center;min-height:336.8px;scroll-margin-top:48px;
+}
+.row--shoe-right{grid-template-columns:542.3px 433px}
+.row--shoe-right .row__shoe{order:2}
+.row__corner{position:absolute;width:9.5px;height:9.9px;border:0 solid var(--white);pointer-events:none;
+  transition:transform 300ms var(--ease-out),opacity 300ms var(--ease-out)}
+.row__corner:nth-of-type(1){left:0;top:0;border-width:.8px 0 0 .8px}
+.row__corner:nth-of-type(2){right:0;top:0;border-width:.8px .8px 0 0}
+.row__corner:nth-of-type(3){left:0;bottom:0;border-width:0 0 .8px .8px}
+.row__corner:nth-of-type(4){right:0;bottom:0;border-width:0 .8px .8px 0}
+
+.row__shoe{margin:0;display:grid;place-items:center}
+.row__shoe img{width:100%;height:auto;transition:transform 600ms var(--ease-out),opacity 600ms var(--ease-out)}
+.row__shoe--flip img{scale:-1 1}   /* Figma mirrors the Kipstorm so it runs into the row */
+
+.row__body{display:flex;flex-direction:column;min-height:335.7px}
+.row__tag{font-family:var(--pixel);font-size:14.404px;line-height:17.285px;letter-spacing:.02em;text-transform:uppercase;color:var(--line)}
+.row__name{padding-top:7.655px;font-family:var(--mori);font-weight:600;font-size:51.033px;line-height:50.012px;letter-spacing:-.02em;text-transform:uppercase}
+.row__usps{display:grid;row-gap:10.7px;margin-top:28.068px;list-style:none}
+.row__usps li{display:grid;grid-template-columns:39.5px 1fr;column-gap:9.877px;row-gap:2.469px;padding-top:9.877px;border-top:.8px solid rgba(255,255,255,.12)}
+.row__n{grid-row:span 2;font-family:var(--pixel);font-size:14.404px;line-height:17.285px;letter-spacing:.02em;color:var(--line)}
+.row__usps b{font-family:var(--mori);font-weight:600;font-size:15.639px;line-height:22.4px;letter-spacing:.01em;text-transform:uppercase}
+.row__usps p{font-family:var(--mori);font-weight:400;font-size:13.17px;line-height:18.438px;color:rgba(255,255,255,.62);opacity:.8}
+
+.row__buy{display:flex;align-items:center;gap:11.524px;margin-top:21.401px}
+.row__price{min-width:111.4px;padding-right:8.4px;font-family:var(--mori);font-weight:600;font-size:27.986px;line-height:27.986px;white-space:nowrap}
+.row__price--status{font-size:15.6px;line-height:28px;letter-spacing:.01em;text-transform:uppercase;color:rgba(255,255,255,.62)}
+
+/* the small pixel-type buttons: two ticks, top right and bottom left */
+.tick{position:relative;display:inline-flex;align-items:center;padding:6.914px 11.524px;
+  font-family:var(--pixel);font-size:11.524px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;color:var(--white);
+  transition:transform 160ms var(--ease-out),color 200ms ease}
+.tick::before,.tick::after{content:"";position:absolute;width:9.8px;height:9.8px;border:0 solid currentColor;pointer-events:none;transition:transform 200ms var(--ease-out)}
+.tick::before{right:0;top:0;border-width:.8px .8px 0 0}
+.tick::after{left:0;bottom:0;border-width:0 0 .8px .8px}
+.tick:active{transform:scale(.97)}
+
+/* DETAILS opens the full product name and model code under the buy row */
+.row__more{display:grid;grid-template-rows:0fr;transition:grid-template-rows 240ms var(--ease-out)}
+.row__more > div{overflow:hidden}
+.row__more p{padding-top:14px;font-family:var(--mori);font-weight:400;font-size:12.5px;line-height:1.5;color:rgba(255,255,255,.62)}
+.row.is-open .row__more{grid-template-rows:1fr}
+.row [aria-expanded="true"]{color:var(--line)}
+
+@media (hover:hover) and (pointer:fine){
+  .row:hover .row__shoe img{transform:translateY(-6px) rotate(-1.5deg)}
+  .row:hover .row__corner:nth-of-type(1){transform:translate(-4px,-4px)}
+  .row:hover .row__corner:nth-of-type(2){transform:translate(4px,-4px)}
+  .row:hover .row__corner:nth-of-type(3){transform:translate(-4px,4px)}
+  .row:hover .row__corner:nth-of-type(4){transform:translate(4px,4px)}
+  .tick:hover::before{transform:translate(2px,-2px)}
+  .tick:hover::after{transform:translate(-2px,2px)}
+}
+
+/* rows arrive as they scroll in (only when JS is there to reveal them) */
+@media (prefers-reduced-motion:no-preference){
+  .js .row:not(.is-in) .row__corner{opacity:0;transform:scale(1.6)}
+  .js .row:not(.is-in) .row__shoe img{opacity:0;transform:translateX(-48px) rotate(-3deg)}
+  .js .row--shoe-right:not(.is-in) .row__shoe img{transform:translateX(48px) rotate(3deg)}
+  .js .row:not(.is-in) .row__body > *,.js .row:not(.is-in) .row__usps li{opacity:0;transform:translateY(12px)}
+  .row__body > *,.row__usps li{transition:transform 600ms var(--ease-out),opacity 600ms var(--ease-out)}
+  .row.is-in .row__shoe img{transition-duration:900ms}
+  .row.is-in .row__tag{transition-delay:80ms}
+  .row.is-in .row__name{transition-delay:140ms}
+  .row.is-in .row__usps li{transition-delay:calc(220ms + var(--i) * 60ms)}
+  .row.is-in .row__buy{transition-delay:420ms}
+  .row.is-in .row__corner{transition-delay:120ms}
+  /* once in, hover and press answer immediately */
+  .row.is-settled .row__body > *,.row.is-settled .row__usps li,.row.is-settled .row__corner,.row.is-settled .row__shoe img{transition-delay:0ms}
+  .row.is-settled .row__shoe img{transition-duration:600ms}
+  /* the marker's "you are here" ring */
+  .series__marker::after{animation:ping 2200ms var(--ease-out) infinite}
+}
+@keyframes ping{from{opacity:.9;transform:scale(1)}to{opacity:0;transform:scale(2.2)}}
+@media (prefers-reduced-motion:reduce){
+  .js .row:not(.is-in) .row__shoe img,.js .row:not(.is-in) .row__body > *,.js .row:not(.is-in) .row__corner{opacity:0}
+  .row__shoe img,.row__body > *,.row__corner{transition:opacity 300ms ease;transform:none!important}
+  .row__more{transition:none}
+}
+
+/* narrower desktops: the two columns shrink together */
+@media (max-width:1180px){
+  .row{grid-template-columns:minmax(0,433fr) minmax(0,542fr);column-gap:clamp(32px,6vw,106px);padding:0 clamp(20px,3vw,28px)}
+  .row--shoe-right{grid-template-columns:minmax(0,542fr) minmax(0,433fr)}
+  .row__name{font-size:clamp(38px,4.3vw,51px);line-height:1}
+}
+
+/* phones and portrait tablets: shoe on top, copy under it, the route art put away */
+@media (max-width:900px){
+  .series{padding:72px 16px 96px}
+  .series__list{gap:56px}
+  .series__art{width:100%;left:0;translate:none}
+  .series__route,.series__marker,.series__contour--l{display:none}
+  .series__contour--r{left:auto;right:-160px;top:180px;opacity:.6}
+  .row,.row--shoe-right{grid-template-columns:1fr;row-gap:18px;padding:28px 20px 24px;min-height:0}
+  .row--shoe-right .row__shoe{order:0}
+  .row__shoe img{max-width:420px}
+  .row__body{min-height:0}
+  .row__name{font-size:38px}
+  .row__usps{margin-top:20px}
+  /* price on its own line, then the two actions side by side at thumb height */
+  .row__buy{display:grid;grid-template-columns:1fr 1fr;gap:12px 10px;margin-top:18px}
+  .row__price{grid-column:1 / -1;min-width:0}
+  .tick{justify-content:center;min-height:44px;padding:0 12px;font-size:12px}
+}
