@@ -143,6 +143,14 @@ ul{list-style:none}
 .bracket > i:nth-of-type(4){left:0;bottom:0;border-width:0 0 .8px .8px}
 
 .cta{left:84.23%;top:86.92%;width:max(12.22%,150px);height:max(5%,39px)}
+/* Figma 44:597: a dark tile with a slice of contour map inside it, a blue waypoint dot on the left */
+.cta{background:#0b0b0b;overflow:hidden}
+.cta__terrain{position:absolute;left:-2.75%;top:-110.26%;width:102.2%;height:343.3%;max-width:none;object-fit:cover;pointer-events:none;
+  transition:transform 700ms var(--ease-out)}
+/* the dot rides just ahead of the label, so it stays with it at any button width */
+.cta__dot{position:relative;flex:0 0 auto;width:4px;height:4px;margin-right:10px;border-radius:50%;background:#13348A;pointer-events:none;
+  transition:background-color 200ms ease,transform 200ms var(--ease-out)}
+.cta span{position:relative}
 .cta span{font-family:var(--condensed);font-weight:700;font-size:max(11px,.8889cqi);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
 
 /* sits on the campaign's bottom-right corner (its top 50.26% of the height + 353/707 of 47.72% of the width) */
@@ -159,6 +167,8 @@ ul{list-style:none}
   .bracket:hover > i:nth-of-type(3){transform:translate(3px,3px)}
   .bracket:hover > i:nth-of-type(4){transform:translate(-3px,3px)}
   .campaign:hover img{transform:scale(1.03)}
+  .cta:hover .cta__terrain{transform:translate(-4%,6%) scale(1.08)}
+  .cta:hover .cta__dot{background:var(--route);transform:scale(1.5)}
 }
 
 /* ══ entrance: one orchestrated reveal, ~1.5s, marketing-paced ══
@@ -215,6 +225,8 @@ ul{list-style:none}
   .intro,.cta,.scroll{animation-delay:160ms}
   .pill,.bracket,.bracket > i,.campaign img{transition-property:background-color,color}
   .picture img,.picture img.is-on{transform:none;transition:none}
+  .cta__terrain,.cta__dot{transition:none}
+  .cta:hover .cta__terrain,.cta:hover .cta__dot{transform:none}
   .pill:active,.bracket:active{transform:none}
 }
 
@@ -300,7 +312,6 @@ html{scroll-padding-top:24px}
 
 .row__shoe{margin:0;display:grid;place-items:center}
 .row__shoe img{width:100%;height:auto;transition:transform 600ms var(--ease-out),opacity 600ms var(--ease-out)}
-.row__shoe--flip img{scale:-1 1}   /* Figma mirrors the Kipstorm so it runs into the row */
 
 .row__body{display:flex;flex-direction:column;min-height:335.7px}
 .row__tag{font-family:var(--pixel);font-size:14.404px;line-height:17.285px;letter-spacing:.02em;text-transform:uppercase;color:var(--line)}
@@ -391,6 +402,11 @@ html{scroll-padding-top:24px}
   .row__buy{display:grid;grid-template-columns:1fr 1fr;gap:12px 10px;margin-top:18px}
   .row__price{grid-column:1 / -1;min-width:0}
   .tick{justify-content:center;min-height:44px;padding:0 12px;font-size:12px}
+  /* phones: the feature names only, the detail lines are too much at this size */
+  .row__usps{row-gap:0}
+  .row__usps li{padding:10px 0}
+  .row__usps p{display:none}
+  .row__n{grid-row:auto}
 }
 
 /* ═══════════════════════════════════════════════════════════════════
