@@ -145,12 +145,32 @@ ul{list-style:none}
 .cta{left:84.23%;top:86.92%;width:max(12.22%,150px);height:max(5%,39px)}
 /* Figma 44:597: a dark tile with a slice of contour map inside it, a blue waypoint dot on the left */
 .cta{background:#0b0b0b;overflow:hidden}
-.cta__terrain{position:absolute;left:-2.75%;top:-110.26%;width:102.2%;height:343.3%;max-width:none;object-fit:cover;pointer-events:none;
+.cta__terrain{position:absolute;left:-2.75%;top:-110.26%;width:102.2%;height:343.3%;max-width:none;pointer-events:none;overflow:visible;
   transition:transform 700ms var(--ease-out)}
+.cta__terrain path{stroke:#303030;stroke-width:1;vector-effect:non-scaling-stroke}
+.cta__terrain .t-dots{stroke-linecap:round;stroke-dasharray:1.2 2.6}
+/* runners: a short lit stretch travelling round each contour, each at its own pace and direction */
+.cta__terrain .t-run{stroke:#7D88FF;stroke-opacity:0;stroke-linecap:round;stroke-dasharray:5 20;transition:stroke-opacity 300ms ease}   /* four lit stretches per contour, so some are always inside the button */
 /* the dot rides just ahead of the label, so it stays with it at any button width */
 .cta__dot{position:relative;flex:0 0 auto;width:4px;height:4px;margin-right:10px;border-radius:50%;background:#13348A;pointer-events:none;
   transition:background-color 200ms ease,transform 200ms var(--ease-out)}
 .cta span{position:relative}
+.cta__dot::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none}
+@media (prefers-reduced-motion:no-preference){
+  /* constant motion runs linear: the dotted contours march, the lit stretches circle the terrain */
+  .cta__terrain .t-dots{animation:march 1400ms linear infinite}
+  .cta__terrain .t-dots:nth-of-type(8){animation-direction:reverse;animation-duration:1900ms}
+  .cta__terrain .t-run{stroke-opacity:.5;animation:run calc(2800ms + var(--i) * 450ms) linear calc(var(--i) * -700ms) infinite}
+  .cta__terrain .t-run:nth-of-type(even){animation-direction:reverse}
+  /* the waypoint breathes, and a ring leaves it on each beat */
+  .cta__dot{animation:beat 1800ms ease-in-out infinite}
+  .cta__dot::after{animation:ring 1800ms var(--ease-out) infinite}
+}
+@keyframes march{to{stroke-dashoffset:-3.8}}
+@keyframes run{to{stroke-dashoffset:-25}}   /* one dash period: seamless */
+@keyframes beat{0%,100%{background-color:#13348A;transform:scale(1)}45%{background-color:#2F5ED8;transform:scale(1.35)}}
+/* a halo that grows off the dot: box-shadow keeps its edge thin, a scaled border would thicken */
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(47,94,216,.85)}70%,100%{box-shadow:0 0 0 9px rgba(47,94,216,0)}}
 .cta span{font-family:var(--condensed);font-weight:700;font-size:max(11px,.8889cqi);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
 
 /* sits on the campaign's bottom-right corner (its top 50.26% of the height + 353/707 of 47.72% of the width) */
@@ -168,7 +188,7 @@ ul{list-style:none}
   .bracket:hover > i:nth-of-type(4){transform:translate(-3px,3px)}
   .campaign:hover img{transform:scale(1.03)}
   .cta:hover .cta__terrain{transform:translate(-4%,6%) scale(1.08)}
-  .cta:hover .cta__dot{background:var(--route);transform:scale(1.5)}
+  .cta:hover .cta__terrain .t-run{stroke-opacity:.95}
 }
 
 /* ══ entrance: one orchestrated reveal, ~1.5s, marketing-paced ══
