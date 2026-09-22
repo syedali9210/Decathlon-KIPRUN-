@@ -574,7 +574,6 @@ html{scroll-padding-top:24px}
 .kit__cat{font-family:var(--pixel);font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--line)}
 .kit__name{font-family:var(--mori);font-weight:600;font-size:19px;line-height:1.1;letter-spacing:-.01em;text-transform:uppercase}
 .kit__line{margin-top:2px;font-family:var(--mori);font-weight:400;font-size:12.5px;line-height:1.45;color:rgba(255,255,255,.6)}
-.kit__note{margin-top:4px;font-family:var(--pixel);font-size:10.5px;line-height:1.5;letter-spacing:.02em;color:rgba(125,136,255,.75)}
 .kit__meta{display:flex;align-items:baseline;gap:10px;margin-top:auto;padding-top:12px;border-top:.8px solid rgba(255,255,255,.12)}
 .kit__price{font-family:var(--mori);font-weight:600;font-size:18px}
 .kit__rate{font-family:var(--pixel);font-size:11px;font-style:normal;letter-spacing:.04em;color:rgba(255,255,255,.5)}
