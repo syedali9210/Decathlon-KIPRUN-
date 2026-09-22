@@ -364,8 +364,39 @@ const REDUCED = still.matches;
       e.target.classList.add('is-in');
       obs.unobserve(e.target);
     });
-  }, { rootMargin: '0px 0px -12% 0px', threshold: 0.15 });
+  }, { rootMargin: '0px 0px -4% 0px', threshold: 0.05 });
   kits.forEach((k) => io.observe(k));
+})();
+
+/* The essentials rail: the arrows move it by whole cards, the bar under it says where you are.
+   Everything else is the browser's own scrolling, so a swipe or a trackpad works untouched. */
+(() => {
+  const rail = document.getElementById('essRail');
+  if (!rail) return;
+  const bar = document.getElementById('essBar');
+  const prev = document.getElementById('essPrev'), next = document.getElementById('essNext');
+  const card = () => rail.querySelector('.kit');
+  const step = () => {
+    const c = card();
+    if (!c) return rail.clientWidth;
+    const w = c.getBoundingClientRect().width + parseFloat(getComputedStyle(rail).gap || 0);
+    return w * Math.max(1, Math.floor(rail.clientWidth / w) - 1);   // a screenful less one card, so the eye keeps its place
+  };
+  const update = () => {
+    const max = rail.scrollWidth - rail.clientWidth;
+    const seen = Math.min(1, rail.clientWidth / rail.scrollWidth);
+    const p = max > 8 ? rail.scrollLeft / max : 0;
+    bar.style.width = `${(seen * 100).toFixed(2)}%`;
+    bar.style.marginLeft = `${(p * (100 - seen * 100)).toFixed(2)}%`;
+    prev.disabled = rail.scrollLeft < 8;
+    next.disabled = rail.scrollLeft > max - 8;
+  };
+  [prev, next].forEach((b, i) => b.addEventListener('click', () => {
+    rail.scrollBy({ left: (i ? 1 : -1) * step(), behavior: still.matches ? 'auto' : 'smooth' });
+  }));
+  rail.addEventListener('scroll', () => requestAnimationFrame(update), { passive: true });
+  addEventListener('resize', update);
+  update();
 })();
 
 // one rAF-throttled scroll handler drives both

@@ -251,8 +251,12 @@
       <p class="ess__eyebrow">Running kit // decathlon.in</p>
       <h2 class="ess__title" id="ess-title">The Essentials</h2>
       <p class="ess__lede">Everything around the shoes: shorts, tees, socks, a visor, a belt and a pack.</p>
+      <div class="ess__ctrl">
+        <button class="rail" id="essPrev" type="button" aria-label="Previous products" aria-controls="essRail"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 2 4 8l6 6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+        <button class="rail" id="essNext" type="button" aria-label="More products" aria-controls="essRail"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 2l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
+      </div>
     </header>
-    <ol class="ess__grid">
+    <ol class="ess__rail" id="essRail">
       <li class="kit" style="--i:0">
         <a class="kit__link" href="https://www.decathlon.in/p/8960456/men-s-2-in-1-running-shorts-kiprun-run-500-comfort-black" target="_blank" rel="noopener">
           <span class="kit__shot"><img src="assets/essentials/shorts-men.webp" width="700" height="700" alt="Men's 2 in 1 running shorts, Kiprun Run 500 Comfort black" loading="lazy" decoding="async"></span>
@@ -334,9 +338,33 @@
         </a>
       </li>
     </ol>
+    <span class="ess__track" aria-hidden="true"><i id="essBar"></i></span>
     <p class="ess__foot">Prices and ratings from decathlon.in, 23 September 2026.</p>
   </section>
 </main>
+
+<!-- ─── footer, carried over from the tokyoutopia build ─── -->
+<footer class="foot" id="reach">
+  <div class="foot__top">
+    <p class="foot__eyebrow">42.195 KM</p>
+    <span class="foot__by"><span>BY</span><img src="assets/logo-decathlon.svg" width="188" height="28" alt="Decathlon"></span>
+  </div>
+  <div class="foot__cols">
+    <p class="foot__lede">KIPRUN is Decathlon's running brand: five shoe series, the kit to train and race in, and the accessories that carry everything else.</p>
+    <nav class="foot__links" aria-label="Sections of this page">
+      Explore:<br><a href="#series">The range</a> // <a href="#film">Film</a><br>
+      <a href="#feature">Layer by layer</a> // <a href="#essentials">Essentials</a><br><br>
+      Product data &amp; imagery<br>© Decathlon. Concept build.
+    </nav>
+    <p class="foot__meta">2026<br><a href="https://www.decathlon.in" target="_blank" rel="noopener">decathlon.in ↗</a></p>
+  </div>
+  <div class="foot__strip" aria-hidden="true"><div class="foot__strip-track"><img src="assets/essentials/shorts-men.webp" width="700" height="700" alt="" loading="lazy" decoding="async"><img src="assets/essentials/tee-men.webp" width="700" height="700" alt="" loading="lazy" decoding="async"><img src="assets/essentials/visor.webp" width="700" height="700" alt="" loading="lazy" decoding="async"><img src="assets/essentials/belt.webp" width="700" height="700" alt="" loading="lazy" decoding="async"><img src="assets/essentials/shorts-women.webp" width="700" height="700" alt="" loading="lazy" decoding="async"><img src="assets/essentials/bag.webp" width="700" height="700" alt="" loading="lazy" decoding="async"><img src="assets/essentials/tee-women.webp" width="700" height="700" alt="" loading="lazy" decoding="async"><img src="assets/essentials/socks.webp" width="700" height="700" alt="" loading="lazy" decoding="async"><img src="assets/essentials/shorts-men.webp" width="700" height="700" alt="" loading="lazy" decoding="async"><img src="assets/essentials/tee-men.webp" width="700" height="700" alt="" loading="lazy" decoding="async"><img src="assets/essentials/visor.webp" width="700" height="700" alt="" loading="lazy" decoding="async"><img src="assets/essentials/belt.webp" width="700" height="700" alt="" loading="lazy" decoding="async"><img src="assets/essentials/shorts-women.webp" width="700" height="700" alt="" loading="lazy" decoding="async"><img src="assets/essentials/bag.webp" width="700" height="700" alt="" loading="lazy" decoding="async"><img src="assets/essentials/tee-women.webp" width="700" height="700" alt="" loading="lazy" decoding="async"><img src="assets/essentials/socks.webp" width="700" height="700" alt="" loading="lazy" decoding="async"></div></div>
+  <h2 class="foot__wordmark">
+    <span class="foot__mark"><img src="assets/logo-kiprun.svg" width="153" height="23" alt="Kiprun"></span>
+    <span class="foot__out" aria-hidden="true">RUNNING</span>
+  </h2>
+  <p class="foot__version">Season 2026 · Built for every kilometre</p>
+</footer>
 
 <script src="main.js"></script>
 </body>
