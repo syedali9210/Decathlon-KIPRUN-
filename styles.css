@@ -13,14 +13,14 @@
   --line:#7D88FF;
   --route:#2F5ED8;
   --white:#fff;
-  --sans:"Open Sans",Arial,sans-serif;
+  --sans:PPMori,Arial,sans-serif;   /* the page's own face: Open Sans was never shipped and fell back to Arial */
   --gut:24px;              /* page gutter, as the hero's nav sits */
   --wide:1440px;           /* the width every section lines up to */
   --sec:clamp(76px,7.6vw,116px);   /* air above and below a section */
   --hair:rgba(255,255,255,.14);
   --mori:PPMori,Arial,sans-serif;
   --pixel:Zpix,"Courier New",monospace;
-  --condensed:"Helvetica Neue Condensed","Roboto Condensed","Arial Narrow",sans-serif;   /* Figma: Helvetica Compressed */
+  --condensed:"Helvetica Neue Condensed","Roboto Condensed","Arial Narrow","Liberation Sans Narrow",sans-serif;   /* Figma: Helvetica Compressed */
   /* motion: strong custom curves, never the built-in ones */
   --ease-out:cubic-bezier(.23,1,.32,1);
   --ease-in-out:cubic-bezier(.77,0,.175,1);
@@ -76,15 +76,15 @@ ul{list-style:none}
   position:absolute;top:2.18%;left:1.69%;right:1.65%;height:7.6%;
   display:flex;align-items:center;justify-content:space-between;gap:1.11cqi;z-index:2;
 }
-.nav__logo{display:block;width:10cqi}
+.nav__logo{position:relative;display:block;width:10cqi}
 .nav__logo img{width:100%;height:auto}
 .nav__pills{display:flex;gap:.389cqi}
 /* Apparel is a category, not a shoe: a little air separates it from the five series */
 .nav__apparel{margin-left:.9cqi;padding-left:.9cqi;border-left:.8px solid rgba(255,255,255,.28)}
 .pill{
-  display:flex;align-items:center;height:max(26px,2.227cqi);padding:0 max(11px,1.098cqi);
+  position:relative;display:flex;align-items:center;height:max(26px,2.227cqi);padding:0 max(11px,1.098cqi);
   border:.8px solid var(--white);border-radius:999px;
-  font-size:max(10px,.8444cqi);line-height:1.2;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;
+  font-size:max(11px,.8444cqi);line-height:1.2;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;
   transition:background-color 200ms ease,color 200ms ease,transform 160ms var(--ease-out);
 }
 
@@ -105,7 +105,7 @@ ul{list-style:none}
 /* "KIPRUN by Decathlon": BY in light caps, then the Decathlon mark (the identity's endorsement rule) */
 .lockup__tag{
   position:absolute;left:6.94%;top:76.5%;display:flex;align-items:center;gap:.5em;
-  font-family:PPMori,var(--sans);font-weight:300;font-size:1.6627cqi;line-height:1;letter-spacing:.04em;white-space:nowrap;
+  font-family:PPMori,var(--sans);font-weight:300;font-size:max(11px,1.6627cqi);line-height:1;letter-spacing:.04em;white-space:nowrap;
 }
 .lockup__tag img{height:1.05em;width:auto}
 .lockup > i{position:absolute;width:11px;height:10px;background:var(--handle-bg);border:.8px solid var(--line)}
@@ -124,16 +124,16 @@ ul{list-style:none}
 .campaign::after{content:"";position:absolute;inset:0;pointer-events:none;
   background:linear-gradient(0deg,rgba(6,6,8,.72) 0%,rgba(6,6,8,0) 48%)}
 .campaign__cap{position:absolute;left:5.8%;bottom:9%;z-index:1;display:grid;gap:.35em;transition:opacity 220ms ease,filter 220ms ease}
-.campaign__cap small{font-family:var(--pixel);font-size:max(10px,.78cqi);letter-spacing:.06em;text-transform:uppercase;color:var(--line)}
+.campaign__cap small{font-family:var(--pixel);font-size:max(11px,.78cqi);letter-spacing:.06em;text-transform:uppercase;color:var(--line)}
 .campaign__cap b{font-family:var(--mori);font-weight:600;font-size:max(20px,2.3cqi);line-height:.95;letter-spacing:-.01em;text-transform:uppercase}
-.campaign__count{position:absolute;right:3.2%;top:6%;z-index:1;font-family:var(--pixel);font-size:max(10px,.74cqi);letter-spacing:.06em;color:rgba(255,255,255,.7)}
+.campaign__count{position:absolute;right:3.2%;top:6%;z-index:1;font-family:var(--pixel);font-size:max(11px,.74cqi);letter-spacing:.06em;color:rgba(255,255,255,.7)}
 .campaign__count b{font-weight:400;color:var(--white)}
 .campaign.is-swapping .campaign__cap{opacity:0;filter:blur(3px)}
 
 /* ── right column ── */
 .intro{
   position:absolute;left:83.36%;top:65.51%;width:14.78%;z-index:1;
-  font-weight:700;font-size:max(10px,.8444cqi);line-height:1.2;letter-spacing:.04em;text-transform:uppercase;
+  font-weight:600;font-size:max(11px,.8444cqi);line-height:1.2;letter-spacing:.04em;text-transform:uppercase;
 }
 
 /* bracket buttons: four 9–10px corner marks */
@@ -277,7 +277,7 @@ ul{list-style:none}
   .pill{height:40px;padding:0 16px;font-size:12px}
 
   .lockup{order:2;position:relative;left:auto;top:auto;width:100%;margin-top:4px}
-  .lockup__tag{font-size:3.2cqi}
+  .lockup__tag{font-size:max(11px,3.2cqi)}
   /* the photo stays the background: framed on the runner, dark at the top and foot where the type sits */
   .picture img{width:100%;object-position:60% 50%}   /* portrait: centred on the runner */
   .picture::after{background:linear-gradient(180deg,rgba(6,6,8,.85) 0%,rgba(6,6,8,.55) 28%,rgba(6,6,8,.08) 48%,rgba(6,6,8,.45) 68%,rgba(6,6,8,.9) 100%)}
@@ -418,7 +418,7 @@ html{scroll-padding-top:24px}
 .film__eyebrow{position:absolute;left:24px;top:28px;font-family:var(--pixel);font-size:12px;letter-spacing:.06em;color:rgba(255,255,255,.85)}
 .film__dots{position:absolute;right:24px;bottom:30px;display:flex;gap:10px;list-style:none;pointer-events:auto}
 /* thin bars with a 23px hit area */
-.film__dots button{width:40px;height:23px;padding:10px 0;background:rgba(255,255,255,.35);background-clip:content-box;transition:background-color 200ms ease}
+.film__dots button{width:44px;height:44px;padding:20px 0;background:rgba(255,255,255,.35);background-clip:content-box;transition:background-color 200ms ease}
 .film__dots li.is-on button{background-color:#fff}
 @media (hover:hover) and (pointer:fine){ .film__dots button:hover{background-color:#fff} }
 
@@ -442,7 +442,7 @@ html{scroll-padding-top:24px}
 .lay__box::before{content:"";position:absolute;left:50%;top:-6%;bottom:-6%;width:.8px;translate:-.4px 0;
   background:repeating-linear-gradient(180deg,rgba(255,255,255,.2) 0 9px,transparent 9px 18px);opacity:.45}
 
-.lay__head{position:absolute;left:var(--gut);top:36px;z-index:3;max-width:380px}
+.lay__head{position:absolute;left:max(var(--gut),calc((100vw - var(--wide)) / 2));top:36px;z-index:3;max-width:380px}
 .lay__title{margin-top:12px;font-size:clamp(28px,2.6vw,40px)}   /* a step under a full section title: it sits over the shoe */
 .lay__sub{margin-top:10px;max-width:24ch}
 .lay__step{margin-top:26px;font-family:var(--pixel);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.62)}
@@ -450,7 +450,7 @@ html{scroll-padding-top:24px}
 .lay__bar{display:block;width:160px;height:2px;margin-top:10px;background:rgba(255,255,255,.14)}
 .lay__bar i{display:block;height:100%;background:var(--line);transform-origin:0 50%;transform:scaleX(0)}
 
-.lay__buy{position:absolute;right:var(--gut);top:36px;z-index:4;display:grid;justify-items:end;gap:.6em}
+.lay__buy{position:absolute;right:max(var(--gut),calc((100vw - var(--wide)) / 2));top:36px;z-index:4;display:grid;justify-items:end;gap:.6em}
 .lay__model{font-family:var(--pixel);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--line)}
 .lay__price{font-family:var(--mori);font-weight:600;font-size:40px;line-height:1}
 
@@ -573,8 +573,8 @@ html{scroll-padding-top:24px}
 .ess__rail{display:flex;gap:20px;max-width:1440px;margin:0 auto;padding:2px 24px 6px;list-style:none;
   overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding-inline:24px;scrollbar-width:none}
 .ess__rail::-webkit-scrollbar{display:none}
-.ess{--rail-gutter:max(var(--gut),calc((100vw - var(--wide)) / 2 + var(--gut)))}
-.ess__rail{margin-inline:calc(var(--rail-gutter) * -1);padding-inline:var(--rail-gutter);max-width:none;scroll-padding-inline:var(--rail-gutter)}
+.ess{--rail-gutter:max(var(--gut),calc((100vw - var(--wide)) / 2))}   /* aligns card 1 with the container; the rail itself only bleeds to the viewport */
+.ess__rail{margin-inline:calc(var(--gut) * -1);padding-inline:var(--rail-gutter);max-width:none;scroll-padding-inline:var(--rail-gutter)}
 .kit{flex:0 0 clamp(230px,24vw,320px);scroll-snap-align:start}
 .kit__link{position:relative;display:grid;align-content:start;gap:4px;height:100%;color:var(--white);text-decoration:none;transition:transform 160ms var(--ease-out)}
 .kit__shot{position:relative;display:block;margin-bottom:12px;aspect-ratio:1;overflow:hidden;border:.8px solid rgba(255,255,255,.14)}
@@ -607,12 +607,12 @@ html{scroll-padding-top:24px}
 
 .ess__foot{max-width:var(--wide);margin:32px auto 0;font-family:var(--pixel);font-size:11px;letter-spacing:.04em;color:rgba(255,255,255,.38)}
 
-@media (max-width:760px){
+@media (max-width:900px){
   .ess{--gut:16px;--rail-gutter:16px}
   .ess__head{margin-bottom:28px}
-  .ess__ctrl{display:none}        /* swipe instead */
+  .ess__ctrl{display:none}        /* swipe instead — unless there is a mouse, below */
   .ess__rail{gap:12px}
-  .kit{flex:0 0 66vw}
+  .kit{flex:0 0 min(66vw,300px)}
   .kit__name{font-size:16px}
   .kit__price{font-size:16px}
 }
@@ -622,6 +622,7 @@ html{scroll-padding-top:24px}
    ═══════════════════════════════════════════════════════════════════ */
 .foot{position:relative;display:flex;flex-direction:column;overflow:hidden;
   padding:calc(var(--sec) * .62) var(--gut) 26px;background:var(--handle-bg);color:var(--white)}
+.foot > *{width:100%;max-width:var(--wide);margin-inline:auto}
 .foot__top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
   padding-bottom:.6em;border-bottom:.8px solid var(--hair)}
 .foot__by{display:flex;align-items:center;gap:10px;font-family:var(--pixel);font-size:11px;letter-spacing:.08em;color:rgba(255,255,255,.7)}
@@ -634,7 +635,7 @@ html{scroll-padding-top:24px}
 @media (hover:hover) and (pointer:fine){ .foot__links a:hover,.foot__meta a:hover{color:var(--line)} }
 
 /* the kit runs past, the way the store's footer strip does */
-.foot__strip{margin:0 calc(var(--gut) * -1);overflow:hidden}
+.foot__strip{max-width:none;margin:0 calc(var(--gut) * -1);overflow:hidden}
 .foot__strip-track{display:flex;gap:8px;width:max-content}
 .foot__strip-track img{flex:0 0 auto;width:104px;height:104px;object-fit:cover}
 @media (prefers-reduced-motion:no-preference){
@@ -648,7 +649,9 @@ html{scroll-padding-top:24px}
   color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.55)}
 .foot__version{margin-top:14px;text-align:right;font-family:var(--pixel);font-size:11px;letter-spacing:.04em;color:rgba(255,255,255,.4)}
 
-@media (max-width:760px){
+@media (hover:hover) and (pointer:fine){ .ess__ctrl{display:flex} }
+
+@media (max-width:900px){
   .foot{--gut:16px;padding:52px 16px 22px}
   .foot__cols{grid-template-columns:1fr;gap:22px;padding:28px 0 32px}
   .foot__lede{font-size:15px}
@@ -675,3 +678,11 @@ html{scroll-padding-top:24px}
 .rails::before{left:-12px}
 .rails::after{right:-12px}
 @media (max-width:760px){ .rails{display:none} }
+
+
+/* ── touch: small controls keep their drawn size and grow an invisible hit area ── */
+.pill::after,.tick > span::after{content:"";position:absolute;inset:-9px 0}
+.nav__logo::after{content:"";position:absolute;inset:-12px 0}
+.tick > span{position:static}
+.scroll{min-height:44px}
+.foot__links a,.foot__meta a{display:inline-block;padding:6px 0;margin:-6px 0}
