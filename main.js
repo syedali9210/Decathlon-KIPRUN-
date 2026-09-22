@@ -373,7 +373,6 @@ const REDUCED = still.matches;
 (() => {
   const rail = document.getElementById('essRail');
   if (!rail) return;
-  const bar = document.getElementById('essBar');
   const prev = document.getElementById('essPrev'), next = document.getElementById('essNext');
   const card = () => rail.querySelector('.kit');
   const step = () => {
@@ -384,10 +383,6 @@ const REDUCED = still.matches;
   };
   const update = () => {
     const max = rail.scrollWidth - rail.clientWidth;
-    const seen = Math.min(1, rail.clientWidth / rail.scrollWidth);
-    const p = max > 8 ? rail.scrollLeft / max : 0;
-    bar.style.width = `${(seen * 100).toFixed(2)}%`;
-    bar.style.marginLeft = `${(p * (100 - seen * 100)).toFixed(2)}%`;
     prev.disabled = rail.scrollLeft < 8;
     next.disabled = rail.scrollLeft > max - 8;
   };

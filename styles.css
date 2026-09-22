@@ -14,6 +14,10 @@
   --route:#2F5ED8;
   --white:#fff;
   --sans:"Open Sans",Arial,sans-serif;
+  --gut:24px;              /* page gutter, as the hero's nav sits */
+  --wide:1440px;           /* the width every section lines up to */
+  --sec:clamp(76px,7.6vw,116px);   /* air above and below a section */
+  --hair:rgba(255,255,255,.14);
   --mori:PPMori,Arial,sans-serif;
   --pixel:Zpix,"Courier New",monospace;
   --condensed:"Helvetica Neue Condensed","Roboto Condensed","Arial Narrow",sans-serif;   /* Figma: Helvetica Compressed */
@@ -294,14 +298,10 @@ ul{list-style:none}
 html{scroll-padding-top:24px}
 @media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
 
-.series{
-  position:relative;padding:88px 24px 120px;
-  /* a faint measuring grid with + marks at the crossings, like the stage's construction lines */
-  background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cpath d='M0 .5H120M.5 0V120' stroke='%23fff' stroke-opacity='.035'/%3E%3Cpath d='M.5 -6V7M-6 .5H7' stroke='%237D88FF' stroke-opacity='.22'/%3E%3C/svg%3E") 0 0 / 120px 120px,
-    linear-gradient(180deg,#0b0d1c 0%,var(--bg) 70%);
-}
-.cat{max-width:1440px;margin:0 auto}
+/* the + grid was doing too much: the section keeps one soft lift out of the hero and its own edge lines */
+.series{position:relative;padding:var(--sec) var(--gut);background:linear-gradient(180deg,#090b16 0%,var(--bg) 55%)}
+.cat{position:relative;max-width:var(--wide);margin:0 auto}
+.cat__head{display:grid;gap:12px;margin-bottom:44px}
 .cat__top{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:48px;align-items:center}
 
 /* ── stage ── */
@@ -438,19 +438,19 @@ html{scroll-padding-top:24px}
    ═══════════════════════════════════════════════════════════════════ */
 .lay{position:relative;height:520vh;background:var(--bg);--reach:250px;--card:220px}
 .lay__sticky{position:sticky;top:0;height:100vh;overflow:hidden}
-.lay__topo{position:absolute;inset:-8%;width:116%;height:116%;max-width:none;object-fit:cover;opacity:.12;pointer-events:none}
-.lay__kanji{position:absolute;left:50%;top:50%;translate:-50% -50%;font-family:var(--mori);font-weight:600;
-  font-size:min(26vw,44vh);line-height:.8;letter-spacing:-.04em;white-space:nowrap;color:transparent;-webkit-text-stroke:1.5px var(--line);opacity:.12;pointer-events:none}
+/* one line instead of a topo wash and a giant outline: the axis the shoe comes apart along */
+.lay__box::before{content:"";position:absolute;left:50%;top:-6%;bottom:-6%;width:.8px;translate:-.4px 0;
+  background:repeating-linear-gradient(180deg,rgba(255,255,255,.2) 0 9px,transparent 9px 18px);opacity:.45}
 
-.lay__head{position:absolute;left:24px;top:32px;z-index:3;max-width:380px}
-.lay__eyebrow{font-family:var(--pixel);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--line)}
-.lay__title{margin-top:10px;font-family:var(--mori);font-weight:600;font-size:clamp(30px,2.9vw,44px);line-height:1;letter-spacing:-.02em;text-transform:uppercase}
-.lay__step{margin-top:18px;font-family:var(--pixel);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.62)}
+.lay__head{position:absolute;left:var(--gut);top:36px;z-index:3;max-width:380px}
+.lay__title{margin-top:12px;font-size:clamp(28px,2.6vw,40px)}   /* a step under a full section title: it sits over the shoe */
+.lay__sub{margin-top:10px;max-width:24ch}
+.lay__step{margin-top:26px;font-family:var(--pixel);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.62)}
 .lay__step b{font-weight:400;color:#fff}
 .lay__bar{display:block;width:160px;height:2px;margin-top:10px;background:rgba(255,255,255,.14)}
 .lay__bar i{display:block;height:100%;background:var(--line);transform-origin:0 50%;transform:scaleX(0)}
 
-.lay__buy{position:absolute;right:24px;top:32px;z-index:4;display:grid;justify-items:end;gap:.6em}
+.lay__buy{position:absolute;right:var(--gut);top:36px;z-index:4;display:grid;justify-items:end;gap:.6em}
 .lay__model{font-family:var(--pixel);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--line)}
 .lay__price{font-family:var(--mori);font-weight:600;font-size:40px;line-height:1}
 
@@ -504,10 +504,8 @@ html{scroll-padding-top:24px}
   .co.is-in .co__card{transform:none;transition:opacity 400ms ease 280ms,transform 400ms var(--ease-out) 280ms}
   /* the current layer's handle sends out a ring */
   .co.is-now .co__dot::after{animation:handlePing 2000ms var(--ease-out) infinite}
-  .lay__topo{animation:topo 60s ease-in-out infinite alternate}
 }
 @keyframes handlePing{from{opacity:.9;transform:scale(1)}to{opacity:0;transform:scale(2.6)}}
-@keyframes topo{from{transform:translate3d(-2%,-1.5%,0) scale(1.02)}to{transform:translate3d(2%,1.5%,0) scale(1.06)}}
 
 .lay__now{display:none}
 
@@ -520,9 +518,8 @@ html{scroll-padding-top:24px}
   .lay__sticky{height:100svh;display:flex;flex-direction:column;gap:10px;padding:20px 16px 18px}
   .lay__head{position:static;max-width:none}
   .lay__title{font-size:28px}
-  .lay__title br{display:none}
+  .lay__sub{display:none}
   .lay__step{margin-top:10px}
-  .lay__kanji{font-size:44vw}
   .lay__stage{position:relative;inset:auto;flex:1;min-height:0}
   .lay__box{height:100%;max-width:100%}
   .co{display:none}
@@ -557,8 +554,8 @@ html{scroll-padding-top:24px}
 /* ═══════════════════════════════════════════════════════════════════
    The Essentials — the kit around the shoes, from decathlon.co.uk
    ═══════════════════════════════════════════════════════════════════ */
-.ess{position:relative;padding:104px 24px 72px;background:var(--bg)}
-.ess__head{position:relative;max-width:1440px;margin:0 auto 36px}
+.ess{position:relative;padding:var(--sec) var(--gut) calc(var(--sec) * .62);background:var(--bg)}
+.ess__head{position:relative;max-width:var(--wide);margin:0 auto 44px}
 /* the arrows sit with the heading, out of the rail's way */
 .ess__ctrl{position:absolute;right:0;bottom:0;display:flex;gap:8px}
 .rail{display:grid;place-items:center;width:44px;height:44px;color:var(--white);background:none;border:.8px solid rgba(255,255,255,.22);
@@ -568,18 +565,15 @@ html{scroll-padding-top:24px}
 .rail[disabled]{opacity:.3;pointer-events:none}
 .rail:focus-visible{outline:1.5px solid var(--line);outline-offset:3px}
 @media (hover:hover) and (pointer:fine){ .rail:hover{border-color:var(--line)} }
-/* how far along the rail you are */
-.ess__track{display:block;max-width:1440px;height:2px;margin:24px auto 0;background:rgba(255,255,255,.12)}
-.ess__track i{display:block;height:100%;background:var(--line);transition:margin-left 120ms linear,width 200ms ease}
-.ess__eyebrow{font-family:var(--pixel);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--line)}
-.ess__title{margin-top:12px;font-family:var(--mori);font-weight:600;font-size:clamp(40px,5vw,76px);line-height:.98;letter-spacing:-.03em;text-transform:uppercase}
-.ess__lede{margin-top:14px;max-width:46ch;font-family:var(--mori);font-weight:400;font-size:15px;line-height:1.5;color:rgba(255,255,255,.62)}
+
+.ess__title{margin-top:12px}
+.ess__lede{margin-top:14px}
 
 /* one rail: it runs off the right edge of the page so there is always more to pull in */
 .ess__rail{display:flex;gap:20px;max-width:1440px;margin:0 auto;padding:2px 24px 6px;list-style:none;
   overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding-inline:24px;scrollbar-width:none}
 .ess__rail::-webkit-scrollbar{display:none}
-.ess{--rail-gutter:max(24px,calc((100vw - 1440px) / 2 + 24px))}
+.ess{--rail-gutter:max(var(--gut),calc((100vw - var(--wide)) / 2 + var(--gut)))}
 .ess__rail{margin-inline:calc(var(--rail-gutter) * -1);padding-inline:var(--rail-gutter);max-width:none;scroll-padding-inline:var(--rail-gutter)}
 .kit{flex:0 0 clamp(230px,24vw,320px);scroll-snap-align:start}
 .kit__link{position:relative;display:grid;align-content:start;gap:4px;height:100%;color:var(--white);text-decoration:none;transition:transform 160ms var(--ease-out)}
@@ -611,27 +605,25 @@ html{scroll-padding-top:24px}
 .kit__link:active{transform:scale(.99)}
 .kit__link:focus-visible{outline:1.5px solid var(--line);outline-offset:6px}
 
-.ess__foot{max-width:1440px;margin:36px auto 0;font-family:var(--pixel);font-size:11px;letter-spacing:.04em;color:rgba(255,255,255,.38)}
+.ess__foot{max-width:var(--wide);margin:32px auto 0;font-family:var(--pixel);font-size:11px;letter-spacing:.04em;color:rgba(255,255,255,.38)}
 
 @media (max-width:760px){
-  .ess{padding:72px 16px 52px;--rail-gutter:16px}
+  .ess{--gut:16px;--rail-gutter:16px}
   .ess__head{margin-bottom:28px}
   .ess__ctrl{display:none}        /* swipe instead */
   .ess__rail{gap:12px}
   .kit{flex:0 0 66vw}
   .kit__name{font-size:16px}
   .kit__price{font-size:16px}
-  .ess__track{margin-top:18px}
 }
 
 /* ═══════════════════════════════════════════════════════════════════
    Footer — carried over from the tokyoutopia build
    ═══════════════════════════════════════════════════════════════════ */
 .foot{position:relative;display:flex;flex-direction:column;overflow:hidden;
-  padding:64px 24px 26px;background:var(--handle-bg);color:var(--white)}
+  padding:calc(var(--sec) * .62) var(--gut) 26px;background:var(--handle-bg);color:var(--white)}
 .foot__top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
-  padding-bottom:.6em;border-bottom:.8px solid rgba(255,255,255,.14)}
-.foot__eyebrow{font-family:var(--pixel);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--line)}
+  padding-bottom:.6em;border-bottom:.8px solid var(--hair)}
 .foot__by{display:flex;align-items:center;gap:10px;font-family:var(--pixel);font-size:11px;letter-spacing:.08em;color:rgba(255,255,255,.7)}
 .foot__by img{width:96px;height:auto;filter:brightness(0) invert(1);opacity:.9}
 .foot__cols{display:grid;grid-template-columns:1.25fr 1fr .7fr;gap:32px;padding:38px 0 48px}
@@ -642,7 +634,7 @@ html{scroll-padding-top:24px}
 @media (hover:hover) and (pointer:fine){ .foot__links a:hover,.foot__meta a:hover{color:var(--line)} }
 
 /* the kit runs past, the way the store's footer strip does */
-.foot__strip{margin:0 -24px;overflow:hidden}
+.foot__strip{margin:0 calc(var(--gut) * -1);overflow:hidden}
 .foot__strip-track{display:flex;gap:8px;width:max-content}
 .foot__strip-track img{flex:0 0 auto;width:104px;height:104px;object-fit:cover}
 @media (prefers-reduced-motion:no-preference){
@@ -657,14 +649,29 @@ html{scroll-padding-top:24px}
 .foot__version{margin-top:14px;text-align:right;font-family:var(--pixel);font-size:11px;letter-spacing:.04em;color:rgba(255,255,255,.4)}
 
 @media (max-width:760px){
-  .foot{padding:48px 16px 22px}
+  .foot{--gut:16px;padding:52px 16px 22px}
   .foot__cols{grid-template-columns:1fr;gap:22px;padding:28px 0 32px}
   .foot__lede{font-size:15px}
   .foot__meta{text-align:left}
-  .foot__strip{margin:0 -16px}
   .foot__strip-track img{width:76px;height:76px}
   .foot__wordmark{flex-direction:column;align-items:flex-start;gap:6px}
   .foot__mark img{width:62vw}
   .foot__out{font-size:17vw}
   .foot__version{text-align:left}
 }
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   Shared section furniture — the hero's label/heading/rule language,
+   used by every section under it
+   ═══════════════════════════════════════════════════════════════════ */
+.eyebrow{font-family:var(--pixel);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--line)}
+.s-title{font-family:var(--mori);font-weight:600;font-size:clamp(34px,3.9vw,58px);line-height:.98;letter-spacing:-.03em;text-transform:uppercase}
+.s-lede{max-width:44ch;font-family:var(--mori);font-weight:400;font-size:15px;line-height:1.5;color:rgba(255,255,255,.62)}
+/* construction lines: the container's own edges, drawn the way the hero draws its grid */
+.rails{position:absolute;left:50%;translate:-50% 0;top:0;bottom:0;width:min(100% - var(--gut) * 2,var(--wide));pointer-events:none}
+.rails::before,.rails::after{content:"";position:absolute;top:0;bottom:0;width:.8px;
+  background:repeating-linear-gradient(180deg,rgba(255,255,255,.14) 0 9px,transparent 9px 18px);opacity:.5}
+.rails::before{left:-12px}
+.rails::after{right:-12px}
+@media (max-width:760px){ .rails{display:none} }

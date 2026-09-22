@@ -88,8 +88,12 @@
 
   <!-- the five series: the selected shoe on a stage with its details, the range as cards under it -->
   <section class="series" id="series" aria-labelledby="series-title">
-    <h2 class="sr-only" id="series-title">The five KIPRUN series</h2>
+    <i class="rails" aria-hidden="true"></i>
     <div class="cat">
+      <header class="cat__head">
+        <p class="eyebrow">The range // five series</p>
+        <h2 class="s-title" id="series-title">The Range</h2>
+      </header>
       <div class="cat__top" id="catStage">
         <div class="stage" id="stage">
           <i class="stage__c" aria-hidden="true"></i><i class="stage__c" aria-hidden="true"></i><i class="stage__c" aria-hidden="true"></i><i class="stage__c" aria-hidden="true"></i>
@@ -185,11 +189,10 @@
        (Figma 46:615 → 46:618 → 46:621 → 46:624 → 46:628) ─── -->
   <section class="lay" id="feature" aria-labelledby="lay-title">
     <div class="lay__sticky">
-      <img class="lay__topo" src="assets/series/topo.svg" alt="" aria-hidden="true">
-      <div class="lay__kanji" aria-hidden="true">ELITE</div>
       <header class="lay__head">
-        <p class="lay__eyebrow">Exploded view // 8961381</p>
-        <h2 class="lay__title" id="lay-title">Kipstorm Elite,<br> layer by layer</h2>
+        <p class="eyebrow">Exploded view // 8961381</p>
+        <h2 class="s-title lay__title" id="lay-title">Kipstorm Elite</h2>
+        <p class="s-lede lay__sub">Layer by layer, as you scroll.</p>
         <p class="lay__step" aria-hidden="true">Layer <b id="layStep">01</b> / 05</p>
         <span class="lay__bar" aria-hidden="true"><i id="layBar"></i></span>
       </header>
@@ -248,9 +251,9 @@
   <!-- ─── the essentials: the kit around the shoes, from decathlon.co.uk ─── -->
   <section class="ess" id="essentials" aria-labelledby="ess-title">
     <header class="ess__head">
-      <p class="ess__eyebrow">Running kit // decathlon.in</p>
-      <h2 class="ess__title" id="ess-title">The Essentials</h2>
-      <p class="ess__lede">Everything around the shoes: shorts, tees, socks, a visor, a belt and a pack.</p>
+      <p class="eyebrow ess__eyebrow">Running kit // decathlon.in</p>
+      <h2 class="s-title ess__title" id="ess-title">The Essentials</h2>
+      <p class="s-lede ess__lede">Everything around the shoes: shorts, tees, socks, a visor, a belt and a pack.</p>
       <div class="ess__ctrl">
         <button class="rail" id="essPrev" type="button" aria-label="Previous products" aria-controls="essRail"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 2 4 8l6 6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
         <button class="rail" id="essNext" type="button" aria-label="More products" aria-controls="essRail"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 2l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></button>
@@ -338,7 +341,6 @@
         </a>
       </li>
     </ol>
-    <span class="ess__track" aria-hidden="true"><i id="essBar"></i></span>
     <p class="ess__foot">Prices and ratings from decathlon.in, 23 September 2026.</p>
   </section>
 </main>
@@ -346,7 +348,7 @@
 <!-- ─── footer, carried over from the tokyoutopia build ─── -->
 <footer class="foot" id="reach">
   <div class="foot__top">
-    <p class="foot__eyebrow">42.195 KM</p>
+    <p class="eyebrow">42.195 KM</p>
     <span class="foot__by"><span>BY</span><img src="assets/logo-decathlon.svg" width="188" height="28" alt="Decathlon"></span>
   </div>
   <div class="foot__cols">
