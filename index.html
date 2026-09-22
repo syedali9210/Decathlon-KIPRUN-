@@ -202,6 +202,65 @@
       </li>
     </ol>
   </section>
+
+  <!-- ─── film: the Kipride Max campaign clips open from a card to full bleed as you scroll (from the store build) ─── -->
+  <section class="film" id="film" aria-label="Kipride Max, filmed on the road">
+    <div class="film__sticky">
+      <div class="film__frame" id="filmFrame">
+        <video class="film__video is-on" data-land="assets/video/kipride-beige" data-port="assets/video/kipride-beige-p"
+          muted loop playsinline preload="none" aria-label="Kipride Max in beige, filmed on a city run"></video>
+        <video class="film__video" data-land="assets/video/kipride-cobalt" data-port="assets/video/kipride-cobalt-p"
+          muted loop playsinline preload="none" aria-label="Kipride Max in cobalt blue, filmed on a city run"></video>
+        <video class="film__video" data-land="assets/video/kipride-teal" data-port="assets/video/kipride-teal-p"
+          muted loop playsinline preload="none" aria-label="Kipride Max in teal blue, filmed on a city run"></video>
+        <div class="film__scrim" aria-hidden="true"></div>
+        <div class="film__ui">
+          <p class="film__eyebrow" aria-hidden="true">&gt;_ON_THE_ROAD</p>
+          <ol class="film__dots" id="filmDots">
+          <li class="is-on"><button type="button" data-i="0"><span class="sr-only">Beige</span></button></li>
+          <li><button type="button" data-i="1"><span class="sr-only">Cobalt Blue</span></button></li>
+          <li><button type="button" data-i="2"><span class="sr-only">Teal Blue</span></button></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── main shoe: Kipride Max on a WebGL canvas, its three numbers stepping as you scroll (from the store build) ─── -->
+  <section class="max" id="feature" aria-labelledby="max-title">
+    <h2 class="sr-only" id="max-title">Kipride Max: comfort anywhere, anytime</h2>
+    <div class="max__sticky">
+      <img class="max__topo" src="assets/series/topo.svg" alt="" aria-hidden="true">
+      <div class="max__kanji" aria-hidden="true">MAX</div>
+      <div class="max__hud" aria-hidden="true"><span>SCAN [ON]</span><span>FRAME <b id="hudFrame">000</b> · FPS 30</span><span>KIPRIDE MAX // 8960547</span></div>
+      <div class="max__buy">
+        <span class="max__model">Model 8960547</span>
+        <b class="max__price">₹12,999</b>
+        <a class="tick" href="https://www.decathlon.in/p/8960547" target="_blank" rel="noopener"><span>View Kipride Max</span></a>
+      </div>
+      <div class="max__stage">
+        <div class="max__shoe" id="featureShoe">
+          <div class="max__bob">
+            <img id="featureImg" src="assets/series/kipride-max.webp" width="1169" height="571" alt="Kiprun Kipride Max running shoe, teal blue">
+            <canvas id="featureGl" aria-hidden="true"></canvas>
+          </div>
+          <span class="max__shadow" aria-hidden="true"></span>
+          <i class="max__sel" aria-hidden="true"><b></b><b></b><b></b><b></b></i>
+        </div>
+      </div>
+      <ol class="max__specs" id="featureSpecs">
+        <li class="spec is-on"><span class="spec__n">01 / 03</span><b class="spec__metric">360°</b><span class="spec__title">Fitting comfort</span><p class="spec__text">Ultra-comfy 360° shoe: breathable mesh, 3D-knit tongue and reinforced collar.</p></li>
+        <li class="spec"><span class="spec__n">02 / 03</span><b class="spec__metric">271 g</b><span class="spec__title">Light weight</span><p class="spec__text">6% lighter than the KS900.2 (271g in size 42) for a lighter stride.</p></li>
+        <li class="spec"><span class="spec__n">03 / 03</span><b class="spec__metric">69 %</b><span class="spec__title">Cushioning</span><p class="spec__text">Softech+ foam with 69% energy return to boost your stride.</p></li>
+      </ol>
+    </div>
+    <div class="max__words" aria-hidden="true">
+      <span class="max__over">Kipride Max</span>
+      <span class="max__w">Comfort</span>
+      <span class="max__w">anywhere,</span>
+      <span class="max__w">anytime</span>
+    </div>
+  </section>
 </main>
 
 <script src="main.js"></script>

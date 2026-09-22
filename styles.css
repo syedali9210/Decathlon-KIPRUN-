@@ -392,3 +392,106 @@ html{scroll-padding-top:24px}
   .row__price{grid-column:1 / -1;min-width:0}
   .tick{justify-content:center;min-height:44px;padding:0 12px;font-size:12px}
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   Film — the Kipride Max clips open from a leaning card to full bleed
+   as you scroll, then cut colourway (ported from the store build)
+   ═══════════════════════════════════════════════════════════════════ */
+.film{position:relative;height:340vh;background:var(--bg)}
+.film__sticky{position:sticky;top:0;height:100vh;overflow:hidden}
+/* JS writes the clip; this is its closed state: a card leaning like the KIPRUN letters */
+.film__frame{position:absolute;inset:0;overflow:hidden;background:#0c0e1c;
+  clip-path:polygon(30% 15%,80% 15%,70% 85%,20% 85%)}
+.film__video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;
+  transform:scale(var(--z,1.12));transition:opacity 600ms ease}
+.film__video.is-on{opacity:1}
+.film__scrim{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(6,6,8,.35),transparent 22%,transparent 78%,rgba(6,6,8,.45))}
+.film__ui{position:absolute;inset:0;pointer-events:none;opacity:var(--ui,0)}
+.film__eyebrow{position:absolute;left:24px;top:28px;font-family:var(--pixel);font-size:12px;letter-spacing:.06em;color:rgba(255,255,255,.85)}
+.film__dots{position:absolute;right:24px;bottom:30px;display:flex;gap:10px;list-style:none;pointer-events:auto}
+/* thin bars with a 23px hit area */
+.film__dots button{width:40px;height:23px;padding:10px 0;background:rgba(255,255,255,.35);background-clip:content-box;transition:background-color 200ms ease}
+.film__dots li.is-on button{background-color:#fff}
+@media (hover:hover) and (pointer:fine){ .film__dots button:hover{background-color:#fff} }
+
+/* ═══════════════════════════════════════════════════════════════════
+   Main shoe — Kipride Max on a WebGL canvas that ripples under the
+   pointer; its three numbers step as the copy scrolls past
+   ═══════════════════════════════════════════════════════════════════ */
+.max{position:relative;background:var(--bg)}
+.max__sticky{position:sticky;top:0;height:100vh;overflow:hidden;z-index:2;pointer-events:none}
+.max__topo{position:absolute;inset:-8%;width:116%;height:116%;max-width:none;object-fit:cover;opacity:.14}
+.max__kanji{position:absolute;left:50%;top:44%;translate:-50% -50%;font-family:var(--mori);font-weight:600;
+  font-size:min(30vw,52vh);line-height:.8;letter-spacing:-.04em;white-space:nowrap;color:transparent;-webkit-text-stroke:1.5px var(--line);opacity:.16}
+.max__hud{position:absolute;left:24px;top:32px;z-index:3;display:grid;gap:.5em;font-family:var(--pixel);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--line)}
+.max__hud b{font-weight:400;color:#fff}
+.max__buy{position:absolute;right:24px;top:32px;z-index:4;display:grid;justify-items:end;gap:.6em;pointer-events:auto}
+.max__model{font-family:var(--pixel);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--line)}
+.max__price{font-family:var(--mori);font-weight:600;font-size:40px;line-height:1}
+.max__stage{position:absolute;inset:0 0 150px;display:grid;place-items:center}
+.max__shoe{position:relative;width:min(31vw,460px);will-change:transform}
+.max__bob{position:relative}
+#featureImg{position:absolute;inset:0;width:100%;height:auto}
+#featureImg.is-hidden{visibility:hidden}
+#featureGl{display:block;width:100%;height:auto;aspect-ratio:1169 / 571;filter:drop-shadow(0 30px 44px rgba(0,0,0,.7))}
+.max__shadow{position:absolute;left:16%;right:16%;bottom:-4%;height:9%;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(0,0,0,.75),transparent);filter:blur(6px)}
+/* the hero's dashed selection frame, tracking the shoe */
+.max__sel{position:absolute;inset:-10% -6%;opacity:.7;
+  background:
+    repeating-linear-gradient(90deg,var(--line) 0 9px,transparent 9px 18px) top / 100% .8px no-repeat,
+    repeating-linear-gradient(90deg,var(--line) 0 9px,transparent 9px 18px) bottom / 100% .8px no-repeat,
+    repeating-linear-gradient(180deg,var(--line) 0 9px,transparent 9px 18px) left / .8px 100% no-repeat,
+    repeating-linear-gradient(180deg,var(--line) 0 9px,transparent 9px 18px) right / .8px 100% no-repeat}
+.max__sel b{position:absolute;width:10px;height:10px;background:var(--handle-bg);border:.8px solid var(--line)}
+.max__sel b:nth-child(1){left:-5px;top:-5px}
+.max__sel b:nth-child(2){right:-5px;top:-5px}
+.max__sel b:nth-child(3){right:-5px;bottom:-5px}
+.max__sel b:nth-child(4){left:-5px;bottom:-5px}
+
+/* the three numbers, docked along the bottom of the pinned stage */
+.max__specs{position:absolute;left:0;right:0;bottom:0;z-index:3;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;
+  padding:18px 24px 26px;list-style:none;background:var(--bg);border-top:.8px solid rgba(255,255,255,.12)}
+.spec{padding-top:12px;border-top:2px solid rgba(255,255,255,.14);opacity:.5;transition:opacity 400ms ease,border-color 400ms ease}
+.spec.is-on{opacity:1;border-top-color:var(--line)}
+.spec__n{display:block;font-family:var(--pixel);font-size:12px;letter-spacing:.04em;color:var(--line)}
+.spec__metric{display:block;margin:.15em 0 .05em;font-family:var(--mori);font-weight:600;font-size:44px;line-height:1;letter-spacing:-.02em}
+.spec__title{display:block;font-family:var(--mori);font-weight:600;font-size:15.6px;letter-spacing:.01em;text-transform:uppercase}
+.spec__text{margin-top:.35em;max-width:26em;font-family:var(--mori);font-weight:400;font-size:13.17px;line-height:1.4;color:rgba(255,255,255,.62)}
+
+/* the words run up behind the pinned shoe; their height is what pins it */
+.max__words{position:relative;z-index:1;display:grid;justify-items:center;text-align:center;margin-top:-100vh;padding:72vh 24px 60vh}
+.max__over{margin-bottom:.9em;font-family:var(--pixel);font-size:14px;letter-spacing:.24em;text-transform:uppercase;color:var(--line)}
+.max__w{font-family:var(--mori);font-weight:600;font-size:clamp(56px,7.4vw,112px);line-height:1.02;letter-spacing:-.03em;text-transform:uppercase;
+  text-shadow:0 0 .3em rgba(6,6,8,.85),0 0 .9em rgba(6,6,8,.7)}
+
+@media (prefers-reduced-motion:no-preference){
+  .max__bob{animation:bob 2200ms ease-in-out infinite alternate}
+  .max__topo{animation:topo 60s ease-in-out infinite alternate}
+}
+@keyframes bob{to{transform:translateY(-16px) rotate(1.4deg)}}
+@keyframes topo{from{transform:translate3d(-2%,-1.5%,0) scale(1.02)}to{transform:translate3d(2%,1.5%,0) scale(1.06)}}
+@media (prefers-reduced-motion:reduce){
+  .film__frame{clip-path:none}
+  .film__video{transform:none}
+  .film__ui{opacity:1}
+}
+
+/* phones and portrait tablets */
+@media (max-width:900px){
+  .film{height:300vh}
+  .film__frame{clip-path:polygon(18% 12%,94% 12%,82% 88%,6% 88%)}
+  .max{display:flex;flex-direction:column}
+  .max__words{order:1;margin-top:0;padding:72px 16px 8px}
+  .max__w{font-size:clamp(40px,12vw,64px)}
+  .max__sticky{order:2;position:relative;height:auto;pointer-events:auto;padding-bottom:24px}
+  .max__hud{display:none}
+  .max__kanji{top:30%;font-size:44vw}
+  .max__buy{position:relative;right:auto;top:auto;justify-items:start;padding:8px 16px 0}
+  .max__stage{position:relative;inset:auto;padding:40px 16px}
+  .max__shoe{width:min(80vw,440px)}
+  .max__specs{position:relative;grid-template-columns:1fr;gap:16px;padding:8px 16px 32px;border-top:0}
+  .spec{opacity:1}
+  .spec__metric{font-size:36px}
+}
