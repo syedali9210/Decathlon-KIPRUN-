@@ -314,11 +314,24 @@ const REDUCED = still.matches;
 
 /* ── Vercel analytics + speed insights ───────────────────────────────
    On a page with no bundler, @vercel/analytics and @vercel/speed-insights do one thing:
-   add the two scripts Vercel serves at run time. Skipped locally, where they would 404. */
+   add the two scripts Vercel serves at run time. Skipped locally, where they would 404.
+
+   Where those scripts live depends on how the page was reached. Vercel serves /_vercel at
+   the root of a deployment and will not rewrite into it, so the root is right wherever the
+   deployment is reached directly — its .vercel.app host, or a domain pointed straight at it.
+   Behind Decathlon's router only the /shop/Hyd-test-1/ prefix is forwarded here, so that is
+   the only path that can arrive, and it reaches Vercel's root endpoint if the router strips
+   the prefix on its way through. If it forwards the path unchanged, nothing on this side can
+   reach /_vercel: that needs a rule on Decathlon's side. This is the one place the path is
+   written for the page itself; the other copy is the rewrites in vercel.json. */
+const BASE_PATH = '/shop/Hyd-test-1/';
 (() => {
   const local = /^(localhost|127\.|0\.0\.0\.0|\[?::1)/.test(location.hostname) || location.protocol === 'file:';
   if (local) return;
-  for (const src of ['/_vercel/insights/script.js', '/_vercel/speed-insights/script.js']) {
+  const root = !location.hostname.endsWith('.vercel.app') && location.pathname.startsWith(BASE_PATH)
+    ? BASE_PATH + '_vercel'
+    : '/_vercel';
+  for (const src of [`${root}/insights/script.js`, `${root}/speed-insights/script.js`]) {
     const s = document.createElement('script');
     s.src = src;
     s.defer = true;

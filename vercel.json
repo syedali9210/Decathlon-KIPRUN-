@@ -1,0 +1,10 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    { "source": "/shop/Hyd-test-1", "destination": "/shop/Hyd-test-1/", "permanent": false }
+  ],
+  "rewrites": [
+    { "source": "/shop/Hyd-test-1/", "destination": "/" },
+    { "source": "/shop/Hyd-test-1/:path*", "destination": "/:path*" }
+  ]
+}
