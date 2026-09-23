@@ -435,8 +435,8 @@ html{scroll-padding-top:24px}
 .lay{position:relative;height:520vh;background:var(--bg);--reach:250px;--card:220px}
 .lay__sticky{position:sticky;top:0;height:100vh;overflow:hidden}
 /* one line instead of a topo wash and a giant outline: the axis the shoe comes apart along */
-.lay__box::before{content:"";position:absolute;left:50%;top:-6%;bottom:-6%;width:.8px;translate:-.4px 0;
-  background:repeating-linear-gradient(180deg,rgba(255,255,255,.2) 0 9px,transparent 9px 18px);opacity:.45}
+.lay__box::before{content:"";position:absolute;left:45%;top:-14%;bottom:-14%;width:.8px;translate:-.4px 0;
+  background:repeating-linear-gradient(180deg,rgba(255,255,255,.2) 0 9px,transparent 9px 18px);opacity:.4}
 
 .lay__head{position:absolute;left:max(var(--gut),calc((100vw - var(--wide)) / 2));top:36px;z-index:3;max-width:380px}
 .lay__title{margin-top:12px;font-size:clamp(28px,2.6vw,40px)}   /* a step under a full section title: it sits over the shoe */
@@ -453,13 +453,11 @@ html{scroll-padding-top:24px}
 .lay__stage{position:absolute;inset:0;display:grid;place-items:center}
 /* the frames are 687×1024 and share one framing, so stacking them and crossfading reads as the shoe coming apart;
    the box is as tall as the screen allows while leaving room for the callouts either side */
-.lay__box{position:relative;aspect-ratio:687 / 1024;height:min(92vh,900px,calc((100vw - 2 * var(--reach) - 48px) * 1.4905))}
-/* the assembled shoe, then the six layers cut from the exploded frame. Each layer sits at its exploded
-   position; JS offsets it back into the shoe and lets it slide out with the scroll */
-.lay__whole{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
-.ly{position:absolute;left:0;width:100%;top:var(--top);height:var(--h);opacity:0;will-change:transform,opacity}
-.ly > img{display:block;width:100%;height:100%;pointer-events:none}
-
+.lay__box{position:relative;aspect-ratio:4 / 3;width:min(58vw,1040px,calc((100vh - 150px) * 1.333));height:auto}
+/* 20 frames of the shoe coming apart (Figma 52:630), registered on the upper so it holds
+   still while the sole comes away. One frame is lit at a time; the scroll picks which. */
+.seq{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0}
+.seq.is-on{opacity:1}   /* before JS runs */
 /* ── callouts: a handle on the layer, a leader line, the USP ── */
 .co{position:absolute;top:var(--y);z-index:2;display:flex;align-items:center;translate:0 -50%;pointer-events:none}
 .co.is-in{pointer-events:auto}
@@ -518,20 +516,25 @@ html{scroll-padding-top:24px}
   .lay__step{margin-top:10px}
   .lay__stage{position:relative;inset:auto;flex:1;min-height:0;margin-bottom:-4px}
   .lay__box{height:100%;max-width:100%}
-  /* the callouts stay on a phone: the handle rides its layer and its line reaches to the frame's
-     edge, with the words floating at the foot of the shoe, where there is width for them */
-  .co__card{display:none}
-  .co:not(.is-now){opacity:0;transition:opacity 200ms ease}
-  .co--r{left:var(--x);width:calc(100% - var(--x) - 8px)}
-  .co--l{right:calc(100% - var(--x));width:calc(var(--x) - 8px)}
-  .lay__now{position:absolute;left:0;right:0;bottom:0;z-index:3;display:grid;padding:40px 2px 6px;list-style:none;
-    background:linear-gradient(180deg,transparent,rgba(6,6,8,.5) 36%,rgba(6,6,8,.92))}
-  .lay__now li{grid-area:1 / 1;display:grid;grid-template-columns:34px 1fr;column-gap:8px;row-gap:3px;
-    opacity:0;transform:translateY(6px);transition:opacity 200ms ease,transform 200ms var(--ease-out)}
-  .lay__now li.is-on{opacity:1;transform:none;transition:opacity 300ms ease 80ms,transform 300ms var(--ease-out) 80ms}
-  .lay__now .co__n{grid-row:span 2}
-  .lay__now b{font-family:var(--mori);font-weight:600;font-size:15.6px;text-transform:uppercase}
-  .lay__now p{font-family:var(--mori);font-weight:400;font-size:13px;line-height:1.45;color:rgba(255,255,255,.62)}
+  /* the callouts float on a phone as they do on a desktop: the handle rides its part and the
+     words sit at the frame's edge beside it, over a scrim so the shoe can pass behind them */
+  /* the frame carries transparent margins, so it can run past the gutters and the shoe reads bigger */
+  .lay__box{width:126%;margin-left:-13%;height:auto;max-width:none}
+  .co{position:absolute;inset:0;width:auto;display:block;translate:none;pointer-events:none}
+  .co__dot{position:absolute;left:var(--x);top:var(--y);translate:-50% -50%}
+  .co__line{display:none}
+  .co__card{position:absolute;top:var(--y);translate:0 -50%;flex:none;width:42vw;max-width:210px;
+    padding:8px 10px;border-top:.8px solid rgba(255,255,255,.28);
+    background:linear-gradient(180deg,rgba(6,6,8,.86),rgba(6,6,8,.62));backdrop-filter:blur(3px)}
+  .co--r .co__card{right:11%;margin:0}     /* 11% of the frame is the screen's edge */
+  .co--l .co__card{left:11%;margin:0}
+  .co__card b{font-size:13.5px}
+  .co__card p{font-size:11.5px;line-height:1.4}
+  /* one card at a time: four of them at this width would sit on top of each other.
+     The handles of the parts already covered stay, dimmed, where they are */
+  .co.is-in:not(.is-now) .co__card{opacity:0;visibility:hidden}
+  .co.is-in:not(.is-now) .co__dot{opacity:.45}
+  .co.is-now .co__card{width:52vw;max-width:250px}
   .lay__buy{position:static;display:flex;align-items:center;justify-content:space-between;gap:12px}
   .lay__model{display:none}
   .lay__price{font-size:28px}
