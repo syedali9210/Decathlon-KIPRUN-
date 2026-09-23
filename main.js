@@ -312,61 +312,54 @@ const REDUCED = still.matches;
   };
 })();
 
-/* Layers: the section pins while the Kipstorm Elite comes apart over 20 frames (Figma 52:630),
-   registered on the upper so it holds still and only the sole falls away. The scroll picks the
-   frame; it is followed through a lerp so a notched wheel still reads as one movement. Each USP
-   arrives once its part has separated and rides with it, on every screen size.
-   Reduced motion: the last frame, every callout out, nothing moving. */
+/* Layers: the section pins while the Kipstorm Elite comes apart. It starts as the assembled
+   shoe, which hands over to six separate layers stacked back into it; each layer then slides
+   out to its place on its own stretch of the scroll (outsole first, the carbon rods last),
+   eased in and out. The scroll position is followed through a smoothing step, so notched
+   wheels and trackpad bursts read as one continuous movement. Each layer's USP arrives once
+   it has separated. Reduced motion: shown fully apart, not pinned, nothing moves. */
 (() => {
   const section = document.querySelector('.lay');
   if (!section) return;
   const box = document.getElementById('layBox');
-  const frames = [...box.querySelectorAll('.seq')];
+  const whole = box.querySelector('.lay__whole');
+  const layers = [...box.querySelectorAll('.ly')].map((el) => ({
+    el, dy: +el.dataset.dy, a: +el.dataset.a, b: +el.dataset.b, late: 'late' in el.dataset,
+  }));
   const cos = [...section.querySelectorAll('.co')].sort((x, y) => x.dataset.at - y.dataset.at);
+  const items = [...section.querySelectorAll('.lay__now li')];
   const stepEl = document.getElementById('layStep'), bar = document.getElementById('layBar');
   const clamp = (x) => Math.max(0, Math.min(1, x));
-  const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-  const num = (v) => parseFloat(v);
+  const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);   // in-out cubic
+  const span = (p, a, b) => ease(clamp((p - a) / (b - a)));
+  let unit = 0;
+  const measure = () => { unit = box.getBoundingClientRect().height / 1024; };
 
-  // the rest of the frames are fetched a screen early, so scrubbing never waits on one
-  let warm = false;
-  new IntersectionObserver((es) => es.forEach((e) => {
-    if (!e.isIntersecting || warm) return;
-    warm = true;
-    frames.forEach((f) => { f.fetchPriority = 'auto'; f.decode?.().catch(() => {}); });
-  }), { rootMargin: '120% 0px' }).observe(section);
-
-  let shown = -1, lastFrame = -1;
-  frames.forEach((f) => f.classList.remove('is-on'));   // the markup lights frame 1 for a page without JS
+  let shown = -1;
   const render = (p) => {
-    const k = Math.min(frames.length - 1, Math.round(clamp(p) * (frames.length - 1)));   // frames step evenly with the scroll
-    if (k !== lastFrame) {
-      frames[lastFrame]?.classList.remove('is-on');
-      frames[k].classList.add('is-on');
-      lastFrame = k;
-    }
-    bar.style.transform = `scaleX(${clamp(p).toFixed(3)})`;
-    // a callout rides its part: it sits where the part is at that moment
-    cos.forEach((c) => {
-      const at = +c.dataset.at;
-      const t = clamp((p - at) / (1 - at));
-      for (const ax of ['x', 'y']) {
-        const a = num(c.style.getPropertyValue(`--${ax}0`)), b = num(c.style.getPropertyValue(`--${ax}1`));
-        c.style.setProperty(`--${ax}`, `${(a + (b - a) * ease(t)).toFixed(2)}%`);
-      }
+    if (!unit) measure();
+    const stack = span(p, 0.03, 0.1);            // the layers fade up under the assembled shoe...
+    whole.style.opacity = (1 - span(p, 0.06, 0.13)).toFixed(3);   // ...which then fades away over them
+    layers.forEach((L) => {
+      const t = span(p, L.a, L.b);
+      // parts that sit inside the shoe only appear as they start to come out
+      L.el.style.opacity = (L.late ? span(p, L.a, L.a + 0.08) : stack).toFixed(3);
+      L.el.style.transform = `translate3d(0,${((1 - t) * L.dy * unit).toFixed(2)}px,0)`;
     });
+    bar.style.transform = `scaleX(${clamp((p - 0.1) / 0.7).toFixed(3)})`;
     const n = cos.filter((c) => p >= +c.dataset.at).length;
     if (n === shown) return;
     shown = n;
-    stepEl.textContent = String(Math.max(1, n)).padStart(2, '0');
+    stepEl.textContent = String(n + 1).padStart(2, '0');
     cos.forEach((c, i) => { c.classList.toggle('is-in', i < n); c.classList.toggle('is-now', i === n - 1); });
+    items.forEach((li, i) => li.classList.toggle('is-on', still.matches || i === n - 1));
   };
 
   let target = 0, cur = 0, raf = 0, last = 0;
   const tick = (t) => {
     const dt = Math.min(0.05, last ? (t - last) / 1000 : 0.016);
     last = t;
-    cur += (target - cur) * (1 - Math.exp(-dt * 14));
+    cur += (target - cur) * (1 - Math.exp(-dt * 14));  // quicker than it was: the page itself now eases the wheel
     if (Math.abs(target - cur) < 0.0004) cur = target;
     render(cur);
     raf = cur === target ? 0 : requestAnimationFrame(tick);
@@ -380,12 +373,13 @@ const REDUCED = still.matches;
     if (!raf) raf = requestAnimationFrame(tick);
   };
   const settle = () => {
-    if (still.matches) { cancelAnimationFrame(raf); raf = 0; cur = target = 1; shown = -1; render(1); return; }
+    measure();
+    if (still.matches) { cancelAnimationFrame(raf); raf = 0; cur = target = 1; items.forEach((li) => li.classList.add('is-on')); render(1); return; }
     render(cur);
     window.__layScroll();
   };
   addEventListener('resize', settle);
-  still.addEventListener('change', () => { shown = -1; lastFrame = -1; settle(); });
+  still.addEventListener('change', () => { shown = -1; settle(); });
   settle();
 })();
 
