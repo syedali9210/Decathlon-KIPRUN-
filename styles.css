@@ -102,10 +102,9 @@ ul{list-style:none}
 .lockup__logo img{width:100%;height:100%}
 /* "KIPRUN by Decathlon": BY in light caps, then the Decathlon mark (the identity's endorsement rule) */
 .lockup__tag{
-  position:absolute;left:6.94%;top:76.5%;display:flex;align-items:center;gap:.5em;
+  position:absolute;left:6.94%;top:76.5%;
   font-family:PPMori,var(--sans);font-weight:300;font-size:max(11px,1.6627cqi);line-height:1;letter-spacing:.04em;white-space:nowrap;
 }
-.lockup__tag img{height:1.05em;width:auto}
 .lockup > i{position:absolute;width:11px;height:10px;background:var(--handle-bg);border:.8px solid var(--line)}
 .lockup > i:nth-of-type(1){left:-5px;top:-5px}
 .lockup > i:nth-of-type(2){right:-5px;top:-5px}
@@ -282,7 +281,7 @@ ul{list-style:none}
   .intro{order:4;position:static;width:auto;max-width:24em;font-size:13px;line-height:1.35;margin-top:auto}
   /* the primary action sits at the foot of the screen, where the thumb already is, at its
      own size rather than stretched across it */
-  .cta{order:5;position:relative;left:auto;top:auto;align-self:flex-start;
+  .cta{order:5;position:relative;left:auto;top:auto;align-self:center;
     width:auto;min-width:0;height:46px;padding:0 20px}
   .cta span{font-size:13.5px}
   /* nothing below the fold to scroll to on a phone */
