@@ -59,7 +59,8 @@ document.querySelector('.scroll').addEventListener('click', () => {
   if (bgs.length < 2 || bgs.length !== shots.length) return;
   const cap = panel.querySelector('.campaign__cap');
   const count = panel.querySelector('.campaign__count b');
-  const HOLD = 5000;
+  const phone = matchMedia('(max-width: 900px)');
+  const HOLD = () => (phone.matches ? 3400 : 5000);   // a phone shows one photo at a time: move it along
   let i = 0, timer = 0, held = false;
 
   // the later photos start loading as soon as the first background has — not on window `load`,
@@ -91,7 +92,7 @@ document.querySelector('.scroll').addEventListener('click', () => {
   const play = () => {
     stop();
     if (still.matches || document.hidden || held) return;
-    timer = setInterval(() => { const n = (i + 1) % bgs.length; if (ready(n)) show(n); }, HOLD);
+    timer = setInterval(() => { const n = (i + 1) % bgs.length; if (ready(n)) show(n); }, HOLD());
   };
   const hold = (on) => { held = on; play(); };
   panel.addEventListener('pointerenter', () => hold(true));
@@ -100,6 +101,7 @@ document.querySelector('.scroll').addEventListener('click', () => {
   panel.addEventListener('focusout', () => hold(false));
   document.addEventListener('visibilitychange', play);
   still.addEventListener('change', play);
+  phone.addEventListener('change', play);   // the pace changes with the breakpoint
   play();
 })();
 
