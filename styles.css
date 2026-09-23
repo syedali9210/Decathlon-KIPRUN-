@@ -323,15 +323,17 @@ html{scroll-padding-top:24px}
 .info__cols{margin-top:20px}
 .info__colname{display:flex;align-items:baseline;gap:8px;font-family:var(--pixel);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.5)}
 .info__colname b{font-weight:400;color:#fff}
-.swatches{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;list-style:none}
-.swatch{position:relative;display:block;width:26px;height:26px;padding:0;background:var(--c);border:.8px solid rgba(255,255,255,.28);
-  transition:transform 160ms var(--ease-out),border-color 200ms ease}
-.swatch::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--a)}
-.swatch::before{content:"";position:absolute;inset:-9px}   /* a thumb-sized target around a small square */
-.swatch[aria-pressed="true"]{border-color:#fff;box-shadow:0 0 0 1.6px rgba(6,6,8,1),0 0 0 2.6px #fff}
+.swatches{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;list-style:none}
+/* the shoe itself in that colour, so the choice is readable at a glance */
+.swatch{position:relative;display:block;width:78px;padding:5px 5px 0;background:rgba(255,255,255,.04);border:.8px solid rgba(255,255,255,.16);
+  transition:transform 160ms var(--ease-out),border-color 200ms ease,background-color 200ms ease}
+.swatch img{display:block;width:100%;height:auto}
+.swatch::after{content:"";display:block;height:4px;margin-top:5px;background:var(--a)}   /* the sole's accent */
+.swatch[aria-pressed="true"]{border-color:#fff;background:rgba(255,255,255,.1)}
 .swatch:active{transform:scale(.92)}
 .swatch:focus-visible{outline:1.5px solid var(--line);outline-offset:4px}
-@media (hover:hover) and (pointer:fine){ .swatch:hover{border-color:rgba(255,255,255,.75)} }
+@media (hover:hover) and (pointer:fine){ .swatch:hover{border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.08)} }
+@media (max-width:900px){ .swatch{width:70px} }
 @media (prefers-reduced-motion:reduce){ .swatch{transition:none} .swatch:active{transform:none} }
 
 .info__usps{display:grid;margin-top:22px;list-style:none}

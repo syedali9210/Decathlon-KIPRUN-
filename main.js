@@ -165,6 +165,14 @@ document.querySelector('.scroll').addEventListener('click', () => {
       b.style.setProperty('--a', c.accent);
       b.setAttribute('aria-pressed', String(k === at));
       b.setAttribute('aria-label', c.name);
+      b.title = c.name;
+      const im = document.createElement('img');
+      im.src = `assets/series/${c.thumb}`;
+      im.width = 240; im.height = Math.round(240 * 0.44);
+      im.alt = '';
+      im.loading = 'lazy';
+      im.decoding = 'async';
+      b.append(im);
       b.addEventListener('click', () => pickColour(s, k));
       li.append(b);
       return li;
