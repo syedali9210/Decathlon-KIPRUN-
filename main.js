@@ -224,7 +224,10 @@ document.querySelector('.scroll').addEventListener('click', () => {
 const $ = (s) => document.querySelector(s);
 const REDUCED = still.matches;
 
-/* Film: portrait screens get the 9:16 cuts; only the on-screen clip plays. */
+/* Film: the reel keeps running. Portrait screens get the 9:16 cuts; the clips are warmed
+   before the section arrives, the one on screen and the one after it stay playing, and a
+   colourway change is a crossfade between two running clips rather than a restart. The card
+   opening to full bleed rides its own easing, so the shape follows the scroll smoothly. */
 (() => {
   const frame = document.getElementById('filmFrame');
   if (!frame) return;
@@ -233,172 +236,81 @@ const REDUCED = still.matches;
   const dots = [...document.querySelectorAll('#filmDots li')];
   const portrait = matchMedia('(max-aspect-ratio: 1/1)');
   const phone = matchMedia('(max-width: 900px)');
-  let cur = 0, visible = false;
+  let cur = 0, near = false, visible = false;
 
   const load = () => vids.forEach((v) => {
     const base = portrait.matches ? v.dataset.port : v.dataset.land;
     if (v.dataset.base === base) return;
-    v.dataset.base = base; v.poster = base + '.jpg'; v.src = base + '.mp4'; v.muted = true;
+    const at = v.currentTime;
+    v.dataset.base = base;
+    v.poster = base + '.jpg';
+    v.src = base + '.mp4';
+    v.muted = true;
+    v.preload = near ? 'auto' : 'metadata';
+    if (at) v.currentTime = at;   // a rotate keeps its place in the clip
   });
   load();
-  portrait.addEventListener('change', () => { load(); if (visible) play(); });
+  portrait.addEventListener('change', () => { load(); sync(); });
 
-  const play = () => {
-    vids.forEach((v, k) => { if (k !== cur) v.pause(); });
-    if (REDUCED) { vids[cur].controls = true; return; }   // reduced motion: poster and controls, no autoplay
-    vids[cur].preload = 'auto';
-    vids[cur].play().catch(() => {});
-  };
+  /* the clip on screen and the one after it run; the far one rests. Two decodes at most,
+     and the next colourway is always ready to cut to */
+  function sync() {
+    if (REDUCED) { vids.forEach((v, k) => { v.pause(); v.controls = k === cur; }); return; }
+    vids.forEach((v, k) => {
+      const wanted = near && (k === cur || k === (cur + 1) % vids.length);
+      if (wanted) { v.preload = 'auto'; if (v.paused) v.play().catch(() => {}); }
+      else if (!v.paused) v.pause();
+    });
+  }
   const pick = (n) => {
     if (n === cur) return;
-    vids[cur].classList.remove('is-on'); vids[cur].pause(); vids[cur].controls = false;
+    vids[cur].classList.remove('is-on');
+    vids[cur].controls = false;
     cur = n;
-    vids[cur].classList.add('is-on');
-    vids[cur].currentTime = 0;
+    vids[cur].classList.add('is-on');      // no rewind: the clip is already running underneath
     dots.forEach((d, k) => d.classList.toggle('is-on', k === cur));
-    if (visible) play();
+    sync();
   };
   document.getElementById('filmDots').addEventListener('click', (e) => {
     const b = e.target.closest('button');
     if (b) pick(+b.dataset.i);
   });
-  new IntersectionObserver((es) => es.forEach((e) => {
-    visible = e.isIntersecting;
-    if (visible) play(); else vids.forEach((v) => v.pause());
-  }), { threshold: 0.05 }).observe(frame);
+  // warmed a screen early, so the first frames are there before the section is
+  new IntersectionObserver((es) => es.forEach((e) => { near = e.isIntersecting; load(); sync(); }),
+    { rootMargin: '120% 0px' }).observe(section);
+  new IntersectionObserver((es) => es.forEach((e) => { visible = e.isIntersecting; }),
+    { threshold: 0.02 }).observe(frame);
 
   // the card opens to full bleed over the first 70% of a screen of scroll; the rest cuts colourway
   const CARD = () => (phone.matches ? [18, 12, 94, 12, 82, 88, 6, 88] : [30, 15, 80, 15, 70, 85, 20, 85]);
   const FULL = [0, 0, 100, 0, 100, 100, 0, 100];
   const clamp = (x) => Math.max(0, Math.min(1, x));
+  let want = 0, now = 0, raf = 0, last = 0;
+  const draw = () => {
+    const c = CARD(), p = c.map((v, k) => v + (FULL[k] - v) * now);
+    frame.style.clipPath = `polygon(${p[0]}% ${p[1]}%, ${p[2]}% ${p[3]}%, ${p[4]}% ${p[5]}%, ${p[6]}% ${p[7]}%)`;
+    frame.style.setProperty('--z', (1.12 - 0.12 * now).toFixed(4));
+    frame.style.setProperty('--ui', clamp((now - 0.4) / 0.6).toFixed(3));
+  };
+  const ease = (t) => {
+    const dt = Math.min(0.05, last ? (t - last) / 1000 : 0.016);
+    last = t;
+    now += (want - now) * (1 - Math.exp(-dt * 16));
+    if (Math.abs(want - now) < 0.0008) now = want;
+    draw();
+    raf = now === want ? 0 : requestAnimationFrame(ease);
+    if (!raf) last = 0;
+  };
   window.__filmScroll = () => {
     const r = section.getBoundingClientRect(), vh = innerHeight;
     if (r.bottom < 0 || r.top > vh) return;
     const travel = r.height - vh;
-    const open = clamp(-r.top / (vh * 0.7));
+    want = clamp(-r.top / (vh * 0.7));
+    if (!REDUCED && !raf) raf = requestAnimationFrame(ease);
     const whole = clamp(-r.top / travel);
-    if (!REDUCED) {
-      const c = CARD(), p = c.map((v, k) => v + (FULL[k] - v) * open);
-      frame.style.clipPath = `polygon(${p[0]}% ${p[1]}%, ${p[2]}% ${p[3]}%, ${p[4]}% ${p[5]}%, ${p[6]}% ${p[7]}%)`;
-      frame.style.setProperty('--z', (1.12 - 0.12 * open).toFixed(4));
-      frame.style.setProperty('--ui', clamp((open - 0.4) / 0.6).toFixed(3));
-    }
     pick(whole < 0.3 ? 0 : Math.min(vids.length - 1, Math.floor(((whole - 0.3) / 0.7) * vids.length)));
   };
 })();
-
-/* Layers: the section pins while the Kipstorm Elite comes apart. It starts as the assembled
-   shoe, which hands over to six separate layers stacked back into it; each layer then slides
-   out to its place on its own stretch of the scroll (outsole first, the carbon rods last),
-   eased in and out. The scroll position is followed through a smoothing step, so notched
-   wheels and trackpad bursts read as one continuous movement. Each layer's USP arrives once
-   it has separated. Reduced motion: shown fully apart, not pinned, nothing moves. */
-(() => {
-  const section = document.querySelector('.lay');
-  if (!section) return;
-  const box = document.getElementById('layBox');
-  const whole = box.querySelector('.lay__whole');
-  const layers = [...box.querySelectorAll('.ly')].map((el) => ({
-    el, dy: +el.dataset.dy, a: +el.dataset.a, b: +el.dataset.b, late: 'late' in el.dataset,
-  }));
-  const cos = [...section.querySelectorAll('.co')].sort((x, y) => x.dataset.at - y.dataset.at);
-  const items = [...section.querySelectorAll('.lay__now li')];
-  const stepEl = document.getElementById('layStep'), bar = document.getElementById('layBar');
-  const clamp = (x) => Math.max(0, Math.min(1, x));
-  const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);   // in-out cubic
-  const span = (p, a, b) => ease(clamp((p - a) / (b - a)));
-  let unit = 0;
-  const measure = () => { unit = box.getBoundingClientRect().height / 1024; };
-
-  let shown = -1;
-  const render = (p) => {
-    if (!unit) measure();
-    const stack = span(p, 0.03, 0.1);            // the layers fade up under the assembled shoe...
-    whole.style.opacity = (1 - span(p, 0.06, 0.13)).toFixed(3);   // ...which then fades away over them
-    layers.forEach((L) => {
-      const t = span(p, L.a, L.b);
-      // parts that sit inside the shoe only appear as they start to come out
-      L.el.style.opacity = (L.late ? span(p, L.a, L.a + 0.08) : stack).toFixed(3);
-      L.el.style.transform = `translate3d(0,${((1 - t) * L.dy * unit).toFixed(2)}px,0)`;
-    });
-    bar.style.transform = `scaleX(${clamp((p - 0.1) / 0.7).toFixed(3)})`;
-    const n = cos.filter((c) => p >= +c.dataset.at).length;
-    if (n === shown) return;
-    shown = n;
-    stepEl.textContent = String(n + 1).padStart(2, '0');
-    cos.forEach((c, i) => { c.classList.toggle('is-in', i < n); c.classList.toggle('is-now', i === n - 1); });
-    items.forEach((li, i) => li.classList.toggle('is-on', still.matches || i === n - 1));
-  };
-
-  let target = 0, cur = 0, raf = 0, last = 0;
-  const tick = (t) => {
-    const dt = Math.min(0.05, last ? (t - last) / 1000 : 0.016);
-    last = t;
-    cur += (target - cur) * (1 - Math.exp(-dt * 14));  // quicker than it was: the page itself now eases the wheel
-    if (Math.abs(target - cur) < 0.0004) cur = target;
-    render(cur);
-    raf = cur === target ? 0 : requestAnimationFrame(tick);
-    if (!raf) last = 0;
-  };
-  window.__layScroll = () => {
-    if (still.matches) return;
-    const r = section.getBoundingClientRect(), vh = innerHeight;
-    if (r.bottom < -vh || r.top > 2 * vh) return;
-    target = clamp(-r.top / Math.max(1, r.height - vh));
-    if (!raf) raf = requestAnimationFrame(tick);
-  };
-  const settle = () => {
-    measure();
-    if (still.matches) { cancelAnimationFrame(raf); raf = 0; cur = target = 1; items.forEach((li) => li.classList.add('is-on')); render(1); return; }
-    render(cur);
-    window.__layScroll();
-  };
-  addEventListener('resize', settle);
-  still.addEventListener('change', () => { shown = -1; settle(); });
-  settle();
-})();
-
-/* The essentials: the cards arrive as you reach them, a beat apart. Reduced motion keeps
-   the fade and drops the movement (the CSS holds that); the delay is written per card. */
-(() => {
-  const kits = [...document.querySelectorAll('.kit')];
-  if (!kits.length) return;
-  const io = new IntersectionObserver((entries, obs) => {
-    entries.filter((e) => e.isIntersecting).forEach((e, i) => {
-      e.target.style.setProperty('--d', `${i * 60}ms`);
-      e.target.classList.add('is-in');
-      obs.unobserve(e.target);
-    });
-  }, { rootMargin: '0px 0px -4% 0px', threshold: 0.05 });
-  kits.forEach((k) => io.observe(k));
-})();
-
-/* The essentials rail: the arrows move it by whole cards, the bar under it says where you are.
-   Everything else is the browser's own scrolling, so a swipe or a trackpad works untouched. */
-(() => {
-  const rail = document.getElementById('essRail');
-  if (!rail) return;
-  const prev = document.getElementById('essPrev'), next = document.getElementById('essNext');
-  const card = () => rail.querySelector('.kit');
-  const step = () => {
-    const c = card();
-    if (!c) return rail.clientWidth;
-    const w = c.getBoundingClientRect().width + parseFloat(getComputedStyle(rail).gap || 0);
-    return w * Math.max(1, Math.floor(rail.clientWidth / w) - 1);   // a screenful less one card, so the eye keeps its place
-  };
-  const update = () => {
-    const max = rail.scrollWidth - rail.clientWidth;
-    prev.disabled = rail.scrollLeft < 8;
-    next.disabled = rail.scrollLeft > max - 8;
-  };
-  [prev, next].forEach((b, i) => b.addEventListener('click', () => {
-    rail.scrollBy({ left: (i ? 1 : -1) * step(), behavior: still.matches ? 'auto' : 'smooth' });
-  }));
-  rail.addEventListener('scroll', () => requestAnimationFrame(update), { passive: true });
-  addEventListener('resize', update);
-  update();
-})();
-
 
 /* ── Vercel analytics + speed insights ───────────────────────────────
    On a page with no bundler, @vercel/analytics and @vercel/speed-insights do one thing:

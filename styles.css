@@ -407,10 +407,10 @@ html{scroll-padding-top:24px}
 .film{position:relative;height:340vh;background:var(--bg)}
 .film__sticky{position:sticky;top:0;height:100vh;overflow:hidden}
 /* JS writes the clip; this is its closed state: a card leaning like the KIPRUN letters */
-.film__frame{position:absolute;inset:0;overflow:hidden;background:#0c0e1c;
+.film__frame{position:absolute;inset:0;overflow:hidden;background:#0c0e1c;will-change:clip-path;
   clip-path:polygon(30% 15%,80% 15%,70% 85%,20% 85%)}
 .film__video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;
-  transform:scale(var(--z,1.12));transition:opacity 600ms ease}
+  transform:scale(var(--z,1.12));transition:opacity 700ms ease}
 .film__video.is-on{opacity:1}
 .film__scrim{position:absolute;inset:0;pointer-events:none;
   background:linear-gradient(to bottom,rgba(6,6,8,.35),transparent 22%,transparent 78%,rgba(6,6,8,.45))}
