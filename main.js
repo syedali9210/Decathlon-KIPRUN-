@@ -115,12 +115,18 @@ document.querySelector('.scroll').addEventListener('click', () => {
   const img = q('stageImg'), tilt = q('stageTilt'), stage = q('stage');
   const tag = q('infoTag'), name = q('infoName'), usps = q('infoUsps'), price = q('infoPrice');
   const link = q('infoLink'), moreBtn = q('infoMore'), moreBody = q('infoMoreBody'), full = q('infoFull'), model = q('stageModel');
+  const cols = q('infoCols'), swatches = q('infoSwatches'), colName = q('infoColName');
+  const chosen = {};    // the colour you last picked, per shoe
   const cards = [...section.querySelectorAll('.card')];
   const EASE = 'cubic-bezier(.23,1,.32,1)';
   let cur = 0, token = 0;
 
   // warm every stage image so a swap never waits on the network
-  data.forEach((s) => { const im = new Image(); im.src = `assets/series/${s.img}`; });
+  data.forEach((s) => {
+    const im = new Image();
+    im.src = `assets/series/${s.img}`;
+    s.colours?.forEach((c) => { const ci = new Image(); ci.src = `assets/series/${c.img}`; });
+  });
 
   const esc = (t) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const setMore = (open) => { moreBtn.setAttribute('aria-expanded', String(open)); moreBody.classList.toggle('is-open', open); };
@@ -135,8 +141,56 @@ document.querySelector('.scroll').addEventListener('click', () => {
     link.href = s.href;
     full.innerHTML = `${esc(s.full)} · Model ${s.model}${s.note ? `<br>${esc(s.note)}` : ''}`;
     model.textContent = `Model ${s.model}`;
+    paintSwatches(s);
   };
-  const swapImg = (s) => { img.src = `assets/series/${s.img}`; img.width = s.w; img.height = s.h; img.alt = s.alt; };
+  const shot = (s) => {
+    const c = s.colours?.[chosen[s.id] ?? 0];
+    return c ? { src: `assets/series/${c.img}`, alt: c.alt } : { src: `assets/series/${s.img}`, alt: s.alt };
+  };
+  const swapImg = (s) => { const v = shot(s); img.src = v.src; img.width = s.w; img.height = s.h; img.alt = v.alt; };
+
+  /* a colour change is the same shoe in another skin: it crossfades where a change of shoe
+     slides, so the two read as different kinds of change */
+  const paintSwatches = (s) => {
+    cols.hidden = !(s.colours && s.colours.length > 1);
+    if (cols.hidden) { swatches.replaceChildren(); return; }
+    const at = chosen[s.id] ?? 0;
+    colName.textContent = s.colours[at].name;
+    swatches.replaceChildren(...s.colours.map((c, k) => {
+      const li = document.createElement('li');
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'swatch';
+      b.style.setProperty('--c', c.swatch);
+      b.style.setProperty('--a', c.accent);
+      b.setAttribute('aria-pressed', String(k === at));
+      b.setAttribute('aria-label', c.name);
+      b.addEventListener('click', () => pickColour(s, k));
+      li.append(b);
+      return li;
+    }));
+  };
+  const pickColour = (s, k) => {
+    if ((chosen[s.id] ?? 0) === k) return;
+    chosen[s.id] = k;
+    const c = s.colours[k];
+    colName.textContent = c.name;
+    [...swatches.querySelectorAll('.swatch')].forEach((b, i) => b.setAttribute('aria-pressed', String(i === k)));
+    const t = ++token;
+    const apply = () => { img.src = `assets/series/${c.img}`; img.alt = c.alt; };
+    if (still.matches) { apply(); return; }
+    stop([img]);
+    img.animate([{ opacity: 1, filter: 'blur(0)' }, { opacity: 0, filter: 'blur(4px)' }], { duration: 130, easing: EASE, fill: 'forwards' });
+    setTimeout(async () => {
+      if (t !== token) return;
+      apply();
+      try { await img.decode(); } catch {}
+      if (t !== token) return;
+      stop([img]);
+      img.animate([{ opacity: 0, filter: 'blur(4px)', transform: 'scale(1.02)' }, { opacity: 1, filter: 'blur(0)', transform: 'none' }],
+        { duration: 420, easing: EASE });
+    }, 130);
+  };
   const stop = (els) => els.forEach((el) => el.getAnimations().forEach((a) => a.cancel()));
 
   const select = (k, instant = false) => {
@@ -172,6 +226,9 @@ document.querySelector('.scroll').addEventListener('click', () => {
         { duration: 420, delay: 40 + i * 40, easing: EASE, fill: 'backwards' }));
     }, 160);
   };
+
+  // the page opens on the first shoe: its swatches are painted here, since nothing has changed yet
+  paintSwatches(data[cur]);
 
   cards.forEach((c, i) => c.addEventListener('click', () => {
     select(i);

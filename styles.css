@@ -319,7 +319,22 @@ html{scroll-padding-top:24px}
 /* ── info ── */
 .info__tag{font-family:var(--pixel);font-size:14.4px;line-height:1.2;letter-spacing:.04em;text-transform:uppercase;color:var(--line)}
 .info__name{margin-top:8px;font-family:var(--mori);font-weight:600;font-size:clamp(38px,3.6vw,54px);line-height:1;letter-spacing:-.02em;text-transform:uppercase}
-.info__usps{display:grid;margin-top:26px;list-style:none}
+/* colour choice: a swatch per colourway, the upper's colour with the sole's accent under it */
+.info__cols{margin-top:20px}
+.info__colname{display:flex;align-items:baseline;gap:8px;font-family:var(--pixel);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.info__colname b{font-weight:400;color:#fff}
+.swatches{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;list-style:none}
+.swatch{position:relative;display:block;width:26px;height:26px;padding:0;background:var(--c);border:.8px solid rgba(255,255,255,.28);
+  transition:transform 160ms var(--ease-out),border-color 200ms ease}
+.swatch::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--a)}
+.swatch::before{content:"";position:absolute;inset:-9px}   /* a thumb-sized target around a small square */
+.swatch[aria-pressed="true"]{border-color:#fff;box-shadow:0 0 0 1.6px rgba(6,6,8,1),0 0 0 2.6px #fff}
+.swatch:active{transform:scale(.92)}
+.swatch:focus-visible{outline:1.5px solid var(--line);outline-offset:4px}
+@media (hover:hover) and (pointer:fine){ .swatch:hover{border-color:rgba(255,255,255,.75)} }
+@media (prefers-reduced-motion:reduce){ .swatch{transition:none} .swatch:active{transform:none} }
+
+.info__usps{display:grid;margin-top:22px;list-style:none}
 .info__usps li{display:grid;grid-template-columns:40px 1fr;column-gap:10px;row-gap:3px;padding:12px 0 14px;border-top:.8px solid rgba(255,255,255,.12)}
 .info__n{grid-row:span 2;font-family:var(--pixel);font-size:14.4px;letter-spacing:.02em;color:var(--line)}
 .info__usps b{font-family:var(--mori);font-weight:600;font-size:15.6px;letter-spacing:.01em;text-transform:uppercase}
