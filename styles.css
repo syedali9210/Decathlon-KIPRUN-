@@ -74,10 +74,8 @@ ul{list-style:none}
 /* ── nav ── */
 .nav{
   position:absolute;top:2.18%;left:1.69%;right:1.65%;height:7.6%;
-  display:flex;align-items:center;justify-content:space-between;gap:1.11cqi;z-index:2;
+  display:flex;align-items:center;justify-content:flex-end;gap:1.11cqi;z-index:2;
 }
-.nav__logo{position:relative;display:block;width:10cqi}
-.nav__logo img{width:100%;height:auto}
 .nav__pills{display:flex;gap:.389cqi}
 /* Apparel is a category, not a shoe: a little air separates it from the five series */
 .nav__apparel{margin-left:.9cqi;padding-left:.9cqi;border-left:.8px solid rgba(255,255,255,.28)}
@@ -204,7 +202,6 @@ ul{list-style:none}
   .grid__v{animation:drawDown 900ms var(--ease-in-out) calc(var(--i) * 60ms) backwards}
   .grid__h{animation:drawAcross 900ms var(--ease-in-out) calc(100ms + var(--i) * 60ms) backwards}
 
-  .nav__logo{animation:rise 500ms var(--ease-out) 150ms backwards}
   .nav__pills li{animation:rise 500ms var(--ease-out) calc(200ms + var(--i) * 50ms) backwards}
 
   /* the selection frame draws from its top-left corner, the handles land as it passes them, then the mark wipes in */
@@ -263,7 +260,6 @@ ul{list-style:none}
   .grid__v:nth-child(2),.grid__v:nth-child(4),.grid__h{display:none}
 
   .nav{order:1;position:static;height:auto;flex-direction:column;align-items:stretch;gap:14px}
-  .nav__logo{width:132px}
   /* the five series in one swipeable row; the fading right edge says it scrolls */
   .nav__pills{
     gap:8px;margin:0 -16px;padding:2px 16px;overflow-x:auto;overscroll-behavior-x:contain;
@@ -520,12 +516,17 @@ html{scroll-padding-top:24px}
   .lay__title{font-size:28px}
   .lay__sub{display:none}
   .lay__step{margin-top:10px}
-  .lay__stage{position:relative;inset:auto;flex:1;min-height:0}
+  .lay__stage{position:relative;inset:auto;flex:1;min-height:0;margin-bottom:-4px}
   .lay__box{height:100%;max-width:100%}
-  .co{display:none}
-  /* one USP at a time under the shoe: the latest layer's */
-  .lay__now{display:grid;min-height:86px;list-style:none;border-top:.8px solid rgba(255,255,255,.14)}
-  .lay__now li{grid-area:1 / 1;display:grid;grid-template-columns:34px 1fr;column-gap:8px;row-gap:3px;padding-top:10px;
+  /* the callouts stay on a phone: the handle rides its layer and its line reaches to the frame's
+     edge, with the words floating at the foot of the shoe, where there is width for them */
+  .co__card{display:none}
+  .co:not(.is-now){opacity:0;transition:opacity 200ms ease}
+  .co--r{left:var(--x);width:calc(100% - var(--x) - 8px)}
+  .co--l{right:calc(100% - var(--x));width:calc(var(--x) - 8px)}
+  .lay__now{position:absolute;left:0;right:0;bottom:0;z-index:3;display:grid;padding:40px 2px 6px;list-style:none;
+    background:linear-gradient(180deg,transparent,rgba(6,6,8,.5) 36%,rgba(6,6,8,.92))}
+  .lay__now li{grid-area:1 / 1;display:grid;grid-template-columns:34px 1fr;column-gap:8px;row-gap:3px;
     opacity:0;transform:translateY(6px);transition:opacity 200ms ease,transform 200ms var(--ease-out)}
   .lay__now li.is-on{opacity:1;transform:none;transition:opacity 300ms ease 80ms,transform 300ms var(--ease-out) 80ms}
   .lay__now .co__n{grid-row:span 2}
@@ -682,7 +683,6 @@ html{scroll-padding-top:24px}
 
 /* ── touch: small controls keep their drawn size and grow an invisible hit area ── */
 .pill::after,.tick > span::after{content:"";position:absolute;inset:-9px 0}
-.nav__logo::after{content:"";position:absolute;inset:-12px 0}
 .tick > span{position:static}
 .scroll{min-height:44px}
 .foot__links a,.foot__meta a{display:inline-block;padding:6px 0;margin:-6px 0}
@@ -701,4 +701,11 @@ html{scroll-padding-top:24px}
 .foot__links a,.foot__meta a{transition:color 200ms ease,text-underline-offset 200ms var(--ease-out)}
 @media (hover:hover) and (pointer:fine){
   .foot__links a:hover,.foot__meta a:hover{text-underline-offset:5px}
+}
+
+
+/* the hero's button spans the screen on a phone, where it is the thumb's target; from tablet
+   width there is room for it to sit at its own size */
+@media (min-width:700px) and (max-width:900px){
+  .cta{align-self:flex-start;width:auto;min-width:240px;padding:0 26px}
 }
