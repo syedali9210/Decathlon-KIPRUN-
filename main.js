@@ -312,6 +312,119 @@ const REDUCED = still.matches;
   };
 })();
 
+/* Layers: the section pins while the Kipstorm Elite comes apart. It starts as the assembled
+   shoe, which hands over to six separate layers stacked back into it; each layer then slides
+   out to its place on its own stretch of the scroll (outsole first, the carbon rods last),
+   eased in and out. The scroll position is followed through a smoothing step, so notched
+   wheels and trackpad bursts read as one continuous movement. Each layer's USP arrives once
+   it has separated. Reduced motion: shown fully apart, not pinned, nothing moves. */
+(() => {
+  const section = document.querySelector('.lay');
+  if (!section) return;
+  const box = document.getElementById('layBox');
+  const whole = box.querySelector('.lay__whole');
+  const layers = [...box.querySelectorAll('.ly')].map((el) => ({
+    el, dy: +el.dataset.dy, a: +el.dataset.a, b: +el.dataset.b, late: 'late' in el.dataset,
+  }));
+  const cos = [...section.querySelectorAll('.co')].sort((x, y) => x.dataset.at - y.dataset.at);
+  const items = [...section.querySelectorAll('.lay__now li')];
+  const stepEl = document.getElementById('layStep'), bar = document.getElementById('layBar');
+  const clamp = (x) => Math.max(0, Math.min(1, x));
+  const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);   // in-out cubic
+  const span = (p, a, b) => ease(clamp((p - a) / (b - a)));
+  let unit = 0;
+  const measure = () => { unit = box.getBoundingClientRect().height / 1024; };
+
+  let shown = -1;
+  const render = (p) => {
+    if (!unit) measure();
+    const stack = span(p, 0.03, 0.1);            // the layers fade up under the assembled shoe...
+    whole.style.opacity = (1 - span(p, 0.06, 0.13)).toFixed(3);   // ...which then fades away over them
+    layers.forEach((L) => {
+      const t = span(p, L.a, L.b);
+      // parts that sit inside the shoe only appear as they start to come out
+      L.el.style.opacity = (L.late ? span(p, L.a, L.a + 0.08) : stack).toFixed(3);
+      L.el.style.transform = `translate3d(0,${((1 - t) * L.dy * unit).toFixed(2)}px,0)`;
+    });
+    bar.style.transform = `scaleX(${clamp((p - 0.1) / 0.7).toFixed(3)})`;
+    const n = cos.filter((c) => p >= +c.dataset.at).length;
+    if (n === shown) return;
+    shown = n;
+    stepEl.textContent = String(n + 1).padStart(2, '0');
+    cos.forEach((c, i) => { c.classList.toggle('is-in', i < n); c.classList.toggle('is-now', i === n - 1); });
+    items.forEach((li, i) => li.classList.toggle('is-on', still.matches || i === n - 1));
+  };
+
+  let target = 0, cur = 0, raf = 0, last = 0;
+  const tick = (t) => {
+    const dt = Math.min(0.05, last ? (t - last) / 1000 : 0.016);
+    last = t;
+    cur += (target - cur) * (1 - Math.exp(-dt * 14));  // quicker than it was: the page itself now eases the wheel
+    if (Math.abs(target - cur) < 0.0004) cur = target;
+    render(cur);
+    raf = cur === target ? 0 : requestAnimationFrame(tick);
+    if (!raf) last = 0;
+  };
+  window.__layScroll = () => {
+    if (still.matches) return;
+    const r = section.getBoundingClientRect(), vh = innerHeight;
+    if (r.bottom < -vh || r.top > 2 * vh) return;
+    target = clamp(-r.top / Math.max(1, r.height - vh));
+    if (!raf) raf = requestAnimationFrame(tick);
+  };
+  const settle = () => {
+    measure();
+    if (still.matches) { cancelAnimationFrame(raf); raf = 0; cur = target = 1; items.forEach((li) => li.classList.add('is-on')); render(1); return; }
+    render(cur);
+    window.__layScroll();
+  };
+  addEventListener('resize', settle);
+  still.addEventListener('change', () => { shown = -1; settle(); });
+  settle();
+})();
+
+/* The essentials: the cards arrive as you reach them, a beat apart. Reduced motion keeps
+   the fade and drops the movement (the CSS holds that); the delay is written per card. */
+(() => {
+  const kits = [...document.querySelectorAll('.kit')];
+  if (!kits.length) return;
+  const io = new IntersectionObserver((entries, obs) => {
+    entries.filter((e) => e.isIntersecting).forEach((e, i) => {
+      e.target.style.setProperty('--d', `${i * 60}ms`);
+      e.target.classList.add('is-in');
+      obs.unobserve(e.target);
+    });
+  }, { rootMargin: '0px 0px -4% 0px', threshold: 0.05 });
+  kits.forEach((k) => io.observe(k));
+})();
+
+/* The essentials rail: the arrows move it by whole cards and go dim at the ends.
+   Everything else is the browser's own scrolling, so a swipe or a trackpad works untouched. */
+(() => {
+  const rail = document.getElementById('essRail');
+  if (!rail) return;
+  const prev = document.getElementById('essPrev'), next = document.getElementById('essNext');
+  const card = () => rail.querySelector('.kit');
+  const step = () => {
+    const c = card();
+    if (!c) return rail.clientWidth;
+    const w = c.getBoundingClientRect().width + parseFloat(getComputedStyle(rail).gap || 0);
+    return w * Math.max(1, Math.floor(rail.clientWidth / w) - 1);   // a screenful less one card, so the eye keeps its place
+  };
+  const update = () => {
+    const max = rail.scrollWidth - rail.clientWidth;
+    prev.disabled = rail.scrollLeft < 8;
+    next.disabled = rail.scrollLeft > max - 8;
+  };
+  [prev, next].forEach((b, i) => b.addEventListener('click', () => {
+    rail.scrollBy({ left: (i ? 1 : -1) * step(), behavior: still.matches ? 'auto' : 'smooth' });
+  }));
+  rail.addEventListener('scroll', () => requestAnimationFrame(update), { passive: true });
+  addEventListener('resize', update);
+  update();
+})();
+
+
 /* ── Vercel analytics + speed insights ───────────────────────────────
    On a page with no bundler, @vercel/analytics and @vercel/speed-insights do one thing:
    add the two scripts Vercel serves at run time. Skipped locally, where they would 404.
