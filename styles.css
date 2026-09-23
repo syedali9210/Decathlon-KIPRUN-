@@ -686,3 +686,19 @@ html{scroll-padding-top:24px}
 .tick > span{position:static}
 .scroll{min-height:44px}
 .foot__links a,.foot__meta a{display:inline-block;padding:6px 0;margin:-6px 0}
+
+
+/* ── things step in as they arrive; under reduced motion they only fade ── */
+.js [data-in]{opacity:0}
+.js [data-in].is-in{opacity:1;transform:none}
+@media (prefers-reduced-motion:no-preference){
+  .js [data-in]{transform:translateY(14px);transition:opacity 600ms ease var(--d,0ms),transform 700ms var(--ease-out) var(--d,0ms)}
+}
+@media (prefers-reduced-motion:reduce){
+  .js [data-in]{transition:opacity 300ms ease}
+}
+/* the footer's links answer the pointer the way the rest of the page does */
+.foot__links a,.foot__meta a{transition:color 200ms ease,text-underline-offset 200ms var(--ease-out)}
+@media (hover:hover) and (pointer:fine){
+  .foot__links a:hover,.foot__meta a:hover{text-underline-offset:5px}
+}

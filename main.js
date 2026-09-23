@@ -2,6 +2,7 @@ const still = matchMedia('(prefers-reduced-motion: reduce)');
 
 // the hero arrow takes you to the series
 document.querySelector('.scroll').addEventListener('click', () => {
+  window.__smoothStop?.();
   document.getElementById('series').scrollIntoView({ behavior: still.matches ? 'auto' : 'smooth' });
 });
 
@@ -173,7 +174,10 @@ document.querySelector('.scroll').addEventListener('click', () => {
   cards.forEach((c, i) => c.addEventListener('click', () => {
     select(i);
     // on a phone the cards sit below the stage: bring the change into view
-    if (stage.getBoundingClientRect().top < 0) stage.scrollIntoView({ behavior: still.matches ? 'auto' : 'smooth', block: 'start' });
+    if (stage.getBoundingClientRect().top < 0) {
+      window.__smoothStop?.();
+      stage.scrollIntoView({ behavior: still.matches ? 'auto' : 'smooth', block: 'start' });
+    }
   }));
 
   // the hero pills and the photo panel link to #kipcore etc.: pick that shoe and bring the section up
@@ -185,6 +189,7 @@ document.querySelector('.scroll').addEventListener('click', () => {
     e.preventDefault();
     select(k);
     history.replaceState(null, '', `#${data[k].id}`);
+    window.__smoothStop?.();
     section.scrollIntoView({ behavior: still.matches ? 'auto' : 'smooth' });
   });
   const start = byId(location.hash.slice(1));
@@ -329,7 +334,7 @@ const REDUCED = still.matches;
   const tick = (t) => {
     const dt = Math.min(0.05, last ? (t - last) / 1000 : 0.016);
     last = t;
-    cur += (target - cur) * (1 - Math.exp(-dt * 8));   // frame-rate independent, ~0.3s to catch up
+    cur += (target - cur) * (1 - Math.exp(-dt * 14));  // quicker than it was: the page itself now eases the wheel
     if (Math.abs(target - cur) < 0.0004) cur = target;
     render(cur);
     raf = cur === target ? 0 : requestAnimationFrame(tick);
@@ -392,6 +397,78 @@ const REDUCED = still.matches;
   rail.addEventListener('scroll', () => requestAnimationFrame(update), { passive: true });
   addEventListener('resize', update);
   update();
+})();
+
+
+/* ── Vercel analytics + speed insights ───────────────────────────────
+   On a page with no bundler, @vercel/analytics and @vercel/speed-insights do one thing:
+   add the two scripts Vercel serves at run time. Skipped locally, where they would 404. */
+(() => {
+  const local = /^(localhost|127\.|0\.0\.0\.0|\[?::1)/.test(location.hostname) || location.protocol === 'file:';
+  if (local) return;
+  for (const src of ['/_vercel/insights/script.js', '/_vercel/speed-insights/script.js']) {
+    const s = document.createElement('script');
+    s.src = src;
+    s.defer = true;
+    document.head.appendChild(s);
+  }
+})();
+
+/* ── the page follows the wheel instead of jumping with it ───────────
+   One lerp on the window's own scroll (not a transformed wrapper), so sticky sections,
+   anchors and the scrollbar all keep working. Mouse and trackpad only: touch screens have
+   their own physics, and reduced motion keeps the browser's plain scrolling. */
+(() => {
+  if (still.matches || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  let target = scrollY, current = scrollY, raf = 0, last = 0, running = false, applied = -1;
+  const limit = () => Math.max(0, document.documentElement.scrollHeight - innerHeight);
+  const tick = (t) => {
+    const dt = Math.min(0.05, last ? (t - last) / 1000 : 0.016);
+    last = t;
+    current += (target - current) * (1 - Math.exp(-dt * 12));
+    if (Math.abs(target - current) < 0.5) { current = target; running = false; }
+    scrollTo({ top: current, behavior: 'instant' });
+    applied = Math.round(current);
+    raf = running ? requestAnimationFrame(tick) : 0;
+    if (!raf) last = 0;
+  };
+  addEventListener('wheel', (e) => {
+    if (e.ctrlKey || e.defaultPrevented) return;
+    if (e.target.closest?.('.ess__rail')) return;          // the rail scrolls itself
+    e.preventDefault();
+    const step = e.deltaMode === 1 ? 33 : e.deltaMode === 2 ? innerHeight : 1;
+    target = Math.max(0, Math.min(limit(), (running ? target : scrollY) + e.deltaY * step));
+    running = true;
+    if (!raf) raf = requestAnimationFrame(tick);
+  }, { passive: false });
+  // keyboard, anchors, the scrollbar: let them lead and pick up from where they land.
+  // If the page moved to somewhere we did not put it, something else is driving: hand over.
+  addEventListener('scroll', () => {
+    if (running && applied >= 0 && Math.abs(scrollY - applied) > 2) running = false;
+    if (!running) { target = current = scrollY; applied = -1; }
+  }, { passive: true });
+  /* anything that scrolls the page itself (a pill, a card, the hero arrow) calls this first:
+     a frame of ours landing mid-jump would cancel the browser's smooth scroll */
+  window.__smoothStop = () => {
+    running = false;
+    if (raf) cancelAnimationFrame(raf);
+    raf = 0; last = 0; applied = -1;
+    target = current = scrollY;
+  };
+})();
+
+/* ── section heads, the range's panel and the footer step in on arrival ── */
+(() => {
+  const els = [...document.querySelectorAll('[data-in]')];
+  if (!els.length) return;
+  const io = new IntersectionObserver((entries, obs) => {
+    entries.filter((e) => e.isIntersecting).forEach((e, i) => {
+      e.target.style.setProperty('--d', `${i * 70}ms`);
+      e.target.classList.add('is-in');
+      obs.unobserve(e.target);
+    });
+  }, { rootMargin: '0px 0px -6% 0px', threshold: 0.08 });
+  els.forEach((el) => io.observe(el));
 })();
 
 // one rAF-throttled scroll handler drives both
