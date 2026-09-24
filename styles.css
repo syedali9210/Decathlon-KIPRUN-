@@ -265,13 +265,13 @@ ul{list-style:none}
   .nav{order:1;position:static;height:auto;flex-direction:column;align-items:stretch;gap:14px}
   /* the five series in one swipeable row; the fading right edge says it scrolls */
   .nav__pills{
-    gap:8px;margin:0 -16px;padding:2px 16px;overflow-x:auto;overscroll-behavior-x:contain;
+    flex:none;min-height:44px;align-items:center;gap:8px;margin:0 -16px;padding:2px 16px;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;
     scroll-snap-type:x proximity;scroll-padding-inline:16px;scrollbar-width:none;
     -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent);
             mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent);
   }
   .nav__pills::-webkit-scrollbar{display:none}
-  .nav__pills li{flex:0 0 auto;scroll-snap-align:start}
+  .nav__pills li{display:flex;flex:0 0 auto;scroll-snap-align:start}
   .nav__pills li:last-child{padding-right:32px}
   .pill{height:40px;padding:0 16px;font-size:12px}
 
@@ -782,6 +782,7 @@ html{scroll-padding-top:24px}
   .hero{gap:10px;padding:12px 16px 14px}
   .nav{gap:10px}
   .pill{height:32px;padding:0 13px;font-size:11px}
+  .nav__pills{min-height:36px}
   .lockup{width:min(100%,86vh);margin-top:0}
   .intro{font-size:clamp(20px,8vh,34px)}
   .cta{height:42px}
