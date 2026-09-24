@@ -101,8 +101,9 @@ ul{list-style:none}
 .lockup__logo{position:absolute;left:.86%;top:12.57%;width:99.7%;height:57.9%}
 .lockup__logo img{width:100%;height:100%}
 /* "KIPRUN by Decathlon": BY in light caps, then the Decathlon mark (the identity's endorsement rule) */
+.lockup__tag img{height:1.05em;width:auto}
 .lockup__tag{
-  position:absolute;left:6.94%;top:76.5%;
+  position:absolute;left:6.94%;top:76.5%;display:flex;align-items:center;gap:.5em;
   font-family:PPMori,var(--sans);font-weight:300;font-size:max(11px,1.6627cqi);line-height:1;letter-spacing:.04em;white-space:nowrap;
 }
 .lockup > i{position:absolute;width:11px;height:10px;background:var(--handle-bg);border:.8px solid var(--line)}
@@ -278,7 +279,7 @@ ul{list-style:none}
   .picture::after{background:linear-gradient(180deg,rgba(6,6,8,.85) 0%,rgba(6,6,8,.55) 28%,rgba(6,6,8,.08) 48%,rgba(6,6,8,.45) 68%,rgba(6,6,8,.9) 100%)}
   .campaign{display:none}
   /* copy and action gather at the foot of the screen; the runner shows through the space above them */
-  .intro{order:4;position:static;width:auto;max-width:24em;font-size:13px;line-height:1.35;margin-top:auto}
+  .intro{order:4;position:static;width:auto;max-width:24em;font-size:13px;line-height:1.35;margin-top:auto;align-self:center;text-align:center}
   /* the primary action sits at the foot of the screen, where the thumb already is, at its
      own size rather than stretched across it */
   .cta{order:5;position:relative;left:auto;top:auto;align-self:center;
@@ -474,7 +475,8 @@ html{scroll-padding-top:24px}
 .lay__box{position:relative;aspect-ratio:687 / 1024;height:min(92vh,900px,calc((100vw - 2 * var(--reach) - 48px) * 1.4905))}
 /* the layers, cut from the exploded frame. Each sits at its exploded position; JS offsets it back
    into the shoe at rest and lets it slide out with the scroll, so nothing has to hand over */
-.ly{position:absolute;left:0;width:100%;top:var(--top);height:var(--h);opacity:0;will-change:transform,opacity}
+.ly{position:absolute;left:0;width:100%;top:var(--top);height:var(--h);will-change:transform}
+.ly[data-late] > img{opacity:0}   /* the parts inside the shoe show only while they are out of it */
 .ly > img{display:block;width:100%;height:100%;pointer-events:none}
 
 /* ── callouts: a handle on the layer, a leader line, the USP ── */
@@ -729,4 +731,22 @@ html{scroll-padding-top:24px}
 @media (min-width:700px) and (max-width:900px){
   .cta{height:52px;padding:0 26px}
   .cta span{font-size:15px}
+}
+
+
+/* the shoe closed again: every USP up at once, none dimmed */
+.lay.is-all .co.is-in .co__card{opacity:1}
+.lay.is-all .co.is-in .co__dot{background:var(--line)}
+@media (max-width:900px){
+  /* all four at once on a phone: just the names, at the screen's edges and off the scrim, so the
+     closed shoe stays in view between them */
+  .lay.is-all .co.is-in:not(.is-now) .co__card{opacity:1;visibility:visible}
+  .lay.is-all .co.is-in:not(.is-now) .co__dot,
+  .lay.is-all .co.is-in:not(.is-now) .co__line{opacity:1}
+  .lay.is-all .co__card{width:auto;max-width:25vw;padding:0;background:none;backdrop-filter:none;border-top:0}
+  .lay.is-all .co--l .co__card{text-align:left}
+  .lay.is-all .co--r .co__card{text-align:right}
+  .lay.is-all .co__card p{display:none}
+  .lay.is-all .co__card b{font-size:11px;line-height:1.2;margin-top:2px}
+  .lay.is-all .co__n{font-size:10.5px}
 }

@@ -379,9 +379,10 @@ const REDUCED = still.matches;
   };
 })();
 
-/* Layers: the section pins while the Kipstorm Elite comes apart. The layers are the shoe: at
-   rest they sit stacked back into it, and each slides out to its place on its own stretch of
-   the scroll (outsole first, the carbon rods last), eased in and out. Nothing crossfades, so
+/* Layers: the section pins while the Kipstorm Elite comes apart and goes back together. The
+   layers are the shoe: at rest they sit stacked into it, and each slides out on its own stretch
+   of the scroll (outsole first, the carbon rods last) with its USP; then the shoe closes again
+   and all four USPs stay up around it. Nothing crossfades, so
    there is no moment where two versions of the shoe are on screen at once. The scroll position is followed through a smoothing step, so notched
    wheels and trackpad bursts read as one continuous movement. Each layer's USP arrives once
    it has separated. Reduced motion: shown fully apart, not pinned, nothing moves. */
@@ -390,8 +391,11 @@ const REDUCED = still.matches;
   if (!section) return;
   const box = document.getElementById('layBox');
   const layers = [...box.querySelectorAll('.ly')].map((el) => ({
-    el, dy: +el.dataset.dy, a: +el.dataset.a, b: +el.dataset.b, late: 'late' in el.dataset,
+    el, img: el.querySelector('img'), dy: +el.dataset.dy, a: +el.dataset.a, b: +el.dataset.b, late: 'late' in el.dataset,
   }));
+  /* three acts over the scroll: the shoe opens and each USP arrives with its part; it holds open;
+     then it closes again and all four USPs stay up around the whole shoe */
+  const OPEN = 0.6, CLOSE_FROM = 0.66, CLOSE_TO = 0.82;
   const cos = [...section.querySelectorAll('.co')].sort((x, y) => x.dataset.at - y.dataset.at);
   const stepEl = document.getElementById('layStep'), bar = document.getElementById('layBar');
   const clamp = (x) => Math.max(0, Math.min(1, x));
@@ -403,14 +407,18 @@ const REDUCED = still.matches;
   let shown = -1;
   const render = (p) => {
     if (!unit) measure();
+    const pa = clamp(p / OPEN);                   // how far the opening has got
+    const back = span(p, CLOSE_FROM, CLOSE_TO);   // how far it has closed again
     layers.forEach((L) => {
-      const t = span(p, L.a, L.b);
-      // parts that sit inside the shoe only appear as they start to come out
-      L.el.style.opacity = (L.late ? span(p, L.a, L.a + 0.1).toFixed(3) : '1');
+      const t = span(pa, L.a, L.b) * (1 - back);
+      // parts that sit inside the shoe only show while they are out of it; the image fades,
+      // not the layer, so a USP riding on one stays up once the shoe has closed
+      if (L.late) L.img.style.opacity = (span(pa, L.a, L.a + 0.1) * (1 - back)).toFixed(3);
       L.el.style.transform = `translate3d(0,${((1 - t) * L.dy * unit).toFixed(2)}px,0)`;
     });
-    bar.style.transform = `scaleX(${clamp((p - 0.06) / 0.86).toFixed(3)})`;
-    const n = cos.filter((c) => p >= +c.dataset.at).length;
+    section.classList.toggle('is-all', back > 0.98);
+    bar.style.transform = `scaleX(${clamp(p / CLOSE_TO).toFixed(3)})`;
+    const n = cos.filter((c) => pa >= +c.dataset.at).length;
     if (n === shown) return;
     shown = n;
     stepEl.textContent = String(n + 1).padStart(2, '0');
