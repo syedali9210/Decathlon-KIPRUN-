@@ -472,9 +472,8 @@ html{scroll-padding-top:24px}
 /* the frames are 687×1024 and share one framing, so stacking them and crossfading reads as the shoe coming apart;
    the box is as tall as the screen allows while leaving room for the callouts either side */
 .lay__box{position:relative;aspect-ratio:687 / 1024;height:min(92vh,900px,calc((100vw - 2 * var(--reach) - 48px) * 1.4905))}
-/* the assembled shoe, then the six layers cut from the exploded frame. Each layer sits at its exploded
-   position; JS offsets it back into the shoe and lets it slide out with the scroll */
-.lay__whole{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+/* the layers, cut from the exploded frame. Each sits at its exploded position; JS offsets it back
+   into the shoe at rest and lets it slide out with the scroll, so nothing has to hand over */
 .ly{position:absolute;left:0;width:100%;top:var(--top);height:var(--h);opacity:0;will-change:transform,opacity}
 .ly > img{display:block;width:100%;height:100%;pointer-events:none}
 
@@ -521,7 +520,6 @@ html{scroll-padding-top:24px}
 }
 @keyframes handlePing{from{opacity:.9;transform:scale(1)}to{opacity:0;transform:scale(2.6)}}
 
-.lay__now{display:none}
 
 /* narrower desktops: shorter reach for the callouts */
 @media (max-width:1280px){ .lay{--reach:200px;--card:175px} .co__card p{font-size:12.5px} }
@@ -534,22 +532,30 @@ html{scroll-padding-top:24px}
   .lay__title{font-size:28px}
   .lay__sub{display:none}
   .lay__step{margin-top:10px}
-  .lay__stage{position:relative;inset:auto;flex:1;min-height:0;margin-bottom:-4px}
-  .lay__box{height:100%;max-width:100%}
-  /* the callouts stay on a phone: the handle rides its layer and its line reaches to the frame's
-     edge, with the words floating at the foot of the shoe, where there is width for them */
-  .co__card{display:none}
-  .co:not(.is-now){opacity:0;transition:opacity 200ms ease}
-  .co--r{left:var(--x);width:calc(100% - var(--x) - 8px)}
-  .co--l{right:calc(100% - var(--x));width:calc(var(--x) - 8px)}
-  .lay__now{position:absolute;left:0;right:0;bottom:0;z-index:3;display:grid;padding:40px 2px 6px;list-style:none;
-    background:linear-gradient(180deg,transparent,rgba(6,6,8,.5) 36%,rgba(6,6,8,.92))}
-  .lay__now li{grid-area:1 / 1;display:grid;grid-template-columns:34px 1fr;column-gap:8px;row-gap:3px;
-    opacity:0;transform:translateY(6px);transition:opacity 200ms ease,transform 200ms var(--ease-out)}
-  .lay__now li.is-on{opacity:1;transform:none;transition:opacity 300ms ease 80ms,transform 300ms var(--ease-out) 80ms}
-  .lay__now .co__n{grid-row:span 2}
-  .lay__now b{font-family:var(--mori);font-weight:600;font-size:15.6px;text-transform:uppercase}
-  .lay__now p{font-family:var(--mori);font-weight:400;font-size:13px;line-height:1.45;color:rgba(255,255,255,.62)}
+  .lay__stage{position:relative;inset:auto;flex:1;min-height:0}
+  /* the shoe gives up some width so the USPs can sit beside their layer, as they do on a desktop:
+     a handle on the part, a short line out to the frame's edge, then the words */
+  /* the line reaches the screen's edge and the words come back over the frame's empty margin,
+     on a scrim so the shoe can pass behind them */
+  .lay{--reach:29%}              /* of the frame's width: where the line ends */
+  /* sized from the width so the frame really is 62% of the screen: with a fixed height and an
+     aspect ratio, max-width does not get a say */
+  .lay__box{height:min(100%,calc((100vw - 32px) * 0.9241));width:auto;max-width:none}
+  /* the words hang off the end of the line rather than sitting in its row, so they take the
+     width they need and come back over the frame's empty margin */
+  .co__card{position:absolute;top:50%;translate:0 -50%;width:37vw;max-width:190px;padding:7px 9px;margin:0;
+    border-top-color:rgba(255,255,255,.3);
+    background:linear-gradient(180deg,rgba(6,6,8,.9),rgba(6,6,8,.66));backdrop-filter:blur(3px)}
+  .co--r .co__card{right:0;left:auto}
+  .co--l .co__card{left:0;right:auto}
+  .co__n{font-size:11px}
+  .co__card b{font-size:12.5px;line-height:1.15;margin-top:3px}
+  .co__card p{font-size:11px;line-height:1.35;margin-top:3px}
+  /* four sets of words would sit on top of each other at this width: the one whose part is
+     moving carries the text, the rest keep their handle on the shoe */
+  .co.is-in:not(.is-now) .co__card{opacity:0;visibility:hidden}
+  .co.is-in:not(.is-now) .co__dot{opacity:.5}
+  .co.is-in:not(.is-now) .co__line{opacity:.35}
   .lay__buy{position:static;display:flex;align-items:center;justify-content:space-between;gap:12px}
   .lay__model{display:none}
   .lay__price{font-size:28px}
@@ -561,13 +567,10 @@ html{scroll-padding-top:24px}
   .lay{height:auto}
   .lay__sticky{position:relative;height:auto;min-height:100vh}
   .co__dot,.co__line,.co__card{transition:none}
-  .lay__now li{opacity:1;transform:none;transition:none}
 }
 @media (prefers-reduced-motion:reduce) and (max-width:900px){
   .lay__sticky{min-height:0}
   .lay__stage{flex:none;height:62svh}
-  .lay__now{gap:12px}
-  .lay__now li{grid-area:auto}
 }
 
 /* ═══════════════════════════════════════════════════════════════════
