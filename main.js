@@ -395,11 +395,14 @@ const REDUCED = still.matches;
   }));
   /* three acts over the scroll: the shoe opens and each USP arrives with its part; it holds open;
      then it closes again and all four USPs stay up around the whole shoe */
-  const OPEN = 0.6, CLOSE_FROM = 0.66, CLOSE_TO = 0.82;
+  const OPEN = 0.6, CLOSE_FROM = 0.62, CLOSE_TO = 0.88, CLOSE_EACH = 0.12;
+  [...layers].sort((x, y) => y.a - x.a).forEach((L, i, all) => {
+    L.c0 = CLOSE_FROM + (i / Math.max(1, all.length - 1)) * (CLOSE_TO - CLOSE_EACH - CLOSE_FROM);
+  });
   const cos = [...section.querySelectorAll('.co')].sort((x, y) => x.dataset.at - y.dataset.at);
   const stepEl = document.getElementById('layStep'), bar = document.getElementById('layBar');
   const clamp = (x) => Math.max(0, Math.min(1, x));
-  const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);   // in-out cubic
+  const ease = (t) => 0.5 - Math.cos(Math.PI * t) / 2;   // in-out sine: parts glide off and settle, no lurch in the middle
   const span = (p, a, b) => ease(clamp((p - a) / (b - a)));
   let unit = 0;
   const measure = () => { unit = box.getBoundingClientRect().height / 1024; };
@@ -408,15 +411,16 @@ const REDUCED = still.matches;
   const render = (p) => {
     if (!unit) measure();
     const pa = clamp(p / OPEN);                   // how far the opening has got
-    const back = span(p, CLOSE_FROM, CLOSE_TO);   // how far it has closed again
     layers.forEach((L) => {
+      const back = span(p, L.c0, L.c0 + CLOSE_EACH);   // how far this part has gone home again
       const t = span(pa, L.a, L.b) * (1 - back);
-      // parts that sit inside the shoe only show while they are out of it; the image fades,
-      // not the layer, so a USP riding on one stays up once the shoe has closed
-      if (L.late) L.img.style.opacity = (span(pa, L.a, L.a + 0.1) * (1 - back)).toFixed(3);
+      // parts that sit inside the shoe show only while they are out of it: they appear as they
+      // leave, and on the way back fade only in the last stretch, as they slip inside. The image
+      // fades, not the layer, so a USP riding on one stays up once the shoe has closed
+      if (L.late) L.img.style.opacity = (span(pa, L.a, L.a + 0.1) * (1 - clamp((back - 0.7) / 0.3))).toFixed(3);
       L.el.style.transform = `translate3d(0,${((1 - t) * L.dy * unit).toFixed(2)}px,0)`;
     });
-    section.classList.toggle('is-all', back > 0.98);
+    section.classList.toggle('is-all', p >= CLOSE_TO - 0.005);
     bar.style.transform = `scaleX(${clamp(p / CLOSE_TO).toFixed(3)})`;
     const n = cos.filter((c) => pa >= +c.dataset.at).length;
     if (n === shown) return;
