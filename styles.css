@@ -131,7 +131,7 @@ ul{list-style:none}
 /* ── right column ── */
 .intro{
   position:absolute;left:83.36%;top:65.51%;width:14.78%;z-index:1;
-  font-weight:600;font-size:max(11px,.8444cqi);line-height:1.2;letter-spacing:.04em;text-transform:uppercase;
+  font-weight:600;font-size:max(16px,1.62cqi);line-height:1.04;letter-spacing:.01em;text-transform:uppercase;   /* a tagline now, not a paragraph */
 }
 
 /* bracket buttons: four 9–10px corner marks */
@@ -279,7 +279,7 @@ ul{list-style:none}
   .picture::after{background:linear-gradient(180deg,rgba(6,6,8,.85) 0%,rgba(6,6,8,.55) 28%,rgba(6,6,8,.08) 48%,rgba(6,6,8,.45) 68%,rgba(6,6,8,.9) 100%)}
   .campaign{display:none}
   /* copy and action gather at the foot of the screen; the runner shows through the space above them */
-  .intro{order:4;position:static;width:auto;max-width:24em;font-size:13px;line-height:1.35;margin-top:auto;align-self:center;text-align:center}
+  .intro{order:4;position:static;width:auto;max-width:24em;font-size:22px;line-height:1.1;margin-top:auto;align-self:center;text-align:center}
   /* the primary action sits at the foot of the screen, where the thumb already is, at its
      own size rather than stretched across it */
   .cta{order:5;position:relative;left:auto;top:auto;align-self:center;
