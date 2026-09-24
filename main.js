@@ -235,6 +235,10 @@ document.querySelector('.scroll').addEventListener('click', () => {
     }, 160);
   };
 
+  // the button borrows the hero button's contour map, so the page carries one copy of it
+  const terrain = document.querySelector('.hero .cta__terrain');
+  if (terrain && link && !link.querySelector('.cta__terrain')) link.prepend(terrain.cloneNode(true));
+
   // the page opens on the first shoe: its swatches are painted here, since nothing has changed yet
   paintSwatches(data[cur]);
 

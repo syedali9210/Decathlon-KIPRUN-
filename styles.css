@@ -345,7 +345,13 @@ html{scroll-padding-top:24px}
 .info__n{grid-row:span 2;font-family:var(--pixel);font-size:14.4px;letter-spacing:.02em;color:var(--line)}
 .info__usps b{font-family:var(--mori);font-weight:600;font-size:15.6px;letter-spacing:.01em;text-transform:uppercase}
 .info__usps p{font-family:var(--mori);font-weight:400;font-size:13.5px;line-height:1.45;color:rgba(255,255,255,.62)}
-.info__buy{display:flex;align-items:center;gap:12px;margin-top:18px}
+.info__buy{display:flex;flex-wrap:wrap;align-items:center;gap:14px 16px;margin-top:22px}
+/* the hero's button, set in the flow of the page: same plate, trails, waypoint and brackets.
+   Two classes deep so the hero's own placement rules, at every breakpoint, never reach it */
+.info__buy .cta{position:relative;left:auto;top:auto;order:0;align-self:auto;z-index:0;
+  width:auto;min-width:0;height:50px;padding:0 24px}
+.info__buy .cta span{font-size:13.5px}
+.info__buy .cta__dot{margin-right:12px}
 .info__price{min-width:110px;padding-right:8px;font-family:var(--mori);font-weight:600;font-size:28px;line-height:1;white-space:nowrap}
 .info__price.is-status{font-size:15.6px;letter-spacing:.01em;text-transform:uppercase;color:rgba(255,255,255,.62)}
 
@@ -407,7 +413,10 @@ html{scroll-padding-top:24px}
   .stage{aspect-ratio:4 / 3}
   .stage__tilt{width:86%}
   .info__name{font-size:38px}
-  .info__buy{display:grid;grid-template-columns:1fr 1fr;gap:12px 10px}
+  .info__buy{gap:12px 14px}
+  .info__buy .info__price{flex-basis:100%}
+  .info__buy .cta{height:48px;padding:0 20px}
+  .info__buy .cta span{font-size:13px}
   .info__price{grid-column:1 / -1;min-width:0}
   .tick{justify-content:center;min-height:44px;padding:0 12px;font-size:12px}
   .cat__cards{display:flex;gap:12px;margin:32px -16px 0;padding:2px 16px 4px;overflow-x:auto;overscroll-behavior-x:contain;
