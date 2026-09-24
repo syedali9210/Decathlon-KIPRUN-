@@ -253,7 +253,9 @@ ul{list-style:none}
 }
 
 /* ══ phones and portrait tablets: one column, reading order, thumb-sized targets ══ */
-@media (max-width:900px){
+/* phones, and tablets held upright: the hero's canvas is drawn for a landscape screen, so a tall
+   one gets the stacked layout instead of the canvas stretched down its length */
+@media (max-width:900px), (orientation:portrait) and (max-width:1180px), (orientation:landscape) and (max-height:520px) and (pointer:coarse){
   .hero{height:auto;min-height:100svh;container-type:inline-size;display:flex;flex-direction:column;gap:20px;padding:16px 16px 32px}
   /* the column runs past a screen: dashes are drawn, not stretched from the 780px svg */
   .grid__v img{display:none}
@@ -280,7 +282,7 @@ ul{list-style:none}
   .picture::after{background:linear-gradient(180deg,rgba(6,6,8,.85) 0%,rgba(6,6,8,.55) 28%,rgba(6,6,8,.08) 48%,rgba(6,6,8,.45) 68%,rgba(6,6,8,.9) 100%)}
   .campaign{display:none}
   /* copy and action gather at the foot of the screen; the runner shows through the space above them */
-  .intro{order:4;position:static;width:auto;max-width:none;font-size:clamp(32px,9.6vw,46px);line-height:.98;margin-top:auto;align-self:center;text-align:center}
+  .intro{order:4;position:static;width:auto;max-width:none;font-size:clamp(32px,9.6vw,58px);line-height:.98;margin-top:auto;align-self:center;text-align:center}
   /* the primary action sits at the foot of the screen, where the thumb already is, at its
      own size rather than stretched across it */
   .cta{order:5;position:relative;left:auto;top:auto;align-self:center;
@@ -730,7 +732,7 @@ html{scroll-padding-top:24px}
 
 
 /* a tablet has the room to give the button a little more presence than a phone does */
-@media (min-width:700px) and (max-width:900px){
+@media (min-width:700px) and (max-width:900px), (orientation:portrait) and (min-width:700px) and (max-width:1180px){
   .cta{height:52px;padding:0 26px}
   .cta span{font-size:15px}
 }
@@ -751,4 +753,15 @@ html{scroll-padding-top:24px}
   .lay.is-all .co__card p{display:none}
   .lay.is-all .co__card b{font-size:11px;line-height:1.2;margin-top:2px}
   .lay.is-all .co__n{font-size:10.5px}
+}
+
+/* a phone on its side: a short screen, so the lockup and the tagline size to its height and the
+   button stays above the fold */
+@media (max-width:900px) and (orientation:landscape) and (max-height:520px), (orientation:landscape) and (max-height:520px) and (pointer:coarse){
+  .hero{gap:10px;padding:12px 16px 14px}
+  .nav{gap:10px}
+  .pill{height:32px;padding:0 13px;font-size:11px}
+  .lockup{width:min(100%,86vh);margin-top:0}
+  .intro{font-size:clamp(20px,8vh,34px)}
+  .cta{height:42px}
 }
