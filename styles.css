@@ -345,11 +345,13 @@ html{scroll-padding-top:24px}
 .info__n{grid-row:span 2;font-family:var(--pixel);font-size:14.4px;letter-spacing:.02em;color:var(--line)}
 .info__usps b{font-family:var(--mori);font-weight:600;font-size:15.6px;letter-spacing:.01em;text-transform:uppercase}
 .info__usps p{font-family:var(--mori);font-weight:400;font-size:13.5px;line-height:1.45;color:rgba(255,255,255,.62)}
-.info__buy{display:flex;flex-wrap:wrap;align-items:center;gap:14px 16px;margin-top:22px}
+/* price on its own line; the two buttons under it run edge to edge across the panel */
+.info__buy{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);align-items:stretch;gap:14px 12px;margin-top:22px}
+.info__buy .info__price{grid-column:1 / -1}
 /* the hero's button, set in the flow of the page: same plate, trails, waypoint and brackets.
    Two classes deep so the hero's own placement rules, at every breakpoint, never reach it */
 .info__buy .cta{position:relative;left:auto;top:auto;order:0;align-self:auto;z-index:0;
-  width:auto;min-width:0;height:54px;padding:0 26px}
+  width:100%;min-width:0;height:56px;padding:0 20px}
 .info__buy .cta span{font-size:14.5px}
 .info__buy .cta__dot{margin-right:12px}
 /* Details: the same size, brackets and type as the main button, on a hairline instead of the plate */
@@ -424,9 +426,8 @@ html{scroll-padding-top:24px}
   .stage{aspect-ratio:4 / 3}
   .stage__tilt{width:86%}
   .info__name{font-size:38px}
-  .info__buy{gap:12px 14px}
-  .info__buy .info__price{flex-basis:100%}
-  .info__buy .cta{height:50px;padding:0 20px}
+  .info__buy{gap:12px 10px}
+  .info__buy .cta{height:52px;padding:0 14px}
   .info__buy .cta span{font-size:13.5px}
   .info__price{grid-column:1 / -1;min-width:0}
   .tick{justify-content:center;min-height:44px;padding:0 12px;font-size:12px}
@@ -784,4 +785,9 @@ html{scroll-padding-top:24px}
   .lockup{width:min(100%,86vh);margin-top:0}
   .intro{font-size:clamp(20px,8vh,34px)}
   .cta{height:42px}
+}
+
+/* the narrowest phones: the pair stacks, each still edge to edge */
+@media (max-width:374px){
+  .info__buy{grid-template-columns:1fr}
 }
