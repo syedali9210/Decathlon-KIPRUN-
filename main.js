@@ -510,7 +510,7 @@ const REDUCED = still.matches;
    Where those scripts live depends on how the page was reached. Vercel serves /_vercel at
    the root of a deployment and will not rewrite into it, so the root is right wherever the
    deployment is reached directly — its .vercel.app host, or a domain pointed straight at it.
-   Behind Decathlon's router only the /shop/kiprun-series/ prefix is forwarded here, so that is
+   Behind Decathlon's router only the /shop/kiprun-series prefix is forwarded here, so that is
    the only path that can arrive, and it reaches Vercel's root endpoint if the router strips
    the prefix on its way through. If it forwards the path unchanged, nothing on this side can
    reach /_vercel: that needs a rule on Decathlon's side. This is the one place the path is

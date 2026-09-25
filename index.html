@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- the page lives at /shop/kiprun-series (decathlon.in drops the trailing slash): every relative
+     URL resolves inside that folder, and the address gets its slash back in place, so #links stay on the page -->
+<base href="/shop/kiprun-series/">
+<script>if (location.pathname === '/shop/kiprun-series') history.replaceState(null, '', location.pathname + '/' + location.search + location.hash);</script>
 <title>KIPRUN by Decathlon</title>
 <meta name="description" content="KIPRUN by Decathlon: five shoe series, engineered for every kilometre between a first 5K and race day.">
 <link rel="preconnect" href="https://fonts.googleapis.com">

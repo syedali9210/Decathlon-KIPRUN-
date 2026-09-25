@@ -1,9 +1,15 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "redirects": [
-    { "source": "/shop/kiprun-series", "destination": "/shop/kiprun-series/", "permanent": false }
+    {
+      "source": "/",
+      "missing": [{ "type": "header", "key": "cf-ray" }],
+      "destination": "https://www.decathlon.in/shop/kiprun-series",
+      "permanent": false
+    }
   ],
   "rewrites": [
+    { "source": "/shop/kiprun-series", "destination": "/" },
     { "source": "/shop/kiprun-series/", "destination": "/" },
     { "source": "/shop/kiprun-series/:path*", "destination": "/:path*" }
   ]
