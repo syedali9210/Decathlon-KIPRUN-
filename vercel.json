@@ -4,13 +4,13 @@
     {
       "source": "/",
       "missing": [{ "type": "header", "key": "cf-ray" }],
-      "destination": "https://www.decathlon.in/shop/kiprun-series",
+      "destination": "https://www.decathlon.in/page/kiprun-series",
       "permanent": false
     }
   ],
   "rewrites": [
-    { "source": "/shop/kiprun-series", "destination": "/" },
-    { "source": "/shop/kiprun-series/", "destination": "/" },
-    { "source": "/shop/kiprun-series/:path*", "destination": "/:path*" }
+    { "source": "/page/kiprun-series", "destination": "/" },
+    { "source": "/page/kiprun-series/", "destination": "/" },
+    { "source": "/page/kiprun-series/:path*", "destination": "/:path*" }
   ]
 }
